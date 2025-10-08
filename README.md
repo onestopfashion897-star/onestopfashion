@@ -1,4 +1,4 @@
-# HappyFeet - E-commerce Platform
+# One Stop Fashion - E-commerce Platform
 
 A modern, full-stack e-commerce platform built with Next.js, TypeScript, and MongoDB. Features a complete shopping experience with user authentication, product management, cart functionality, payment integration, and admin dashboard.
 
@@ -52,7 +52,7 @@ Before running this project, make sure you have the following installed:
 
 ```bash
 git clone <repository-url>
-cd happyfeet
+cd onestopfashion
 ```
 
 ### 2. Install Dependencies
@@ -131,7 +131,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## 📁 Project Structure
 
 ```
-happyfeet/
+onestopfashion/
 ├── app/                    # Next.js app directory
 │   ├── api/               # API routes
 │   ├── admin/             # Admin dashboard pages
@@ -224,8 +224,8 @@ This repo includes an Actions workflow at `.github/workflows/deploy.yml` that au
 Prerequisites on the VPS
 - Node.js `>=18` and `npm` installed (`node -v`, `npm -v`).
 - PM2 installed globally (`npm i -g pm2`).
-- App directory exists at `/var/www/happyfeet` and is writable by your deploy user.
-- Environment file on the server (e.g., `/var/www/happyfeet/.env`) with production values.
+- App directory exists at `/var/www/onestopfashion` and is writable by your deploy user.
+- Environment file on the server (e.g., `/var/www/onestopfashion/.env`) with production values.
 
 Required GitHub Secrets (Repository → Settings → Secrets and variables → Actions)
 - `VPS_HOST` – your server IP or hostname.
@@ -245,11 +245,11 @@ What the workflow does
 - Triggers on `push` to `main`.
 - Connects to the VPS via SSH using `VPS_HOST`, `VPS_USER`, `VPS_PASSWORD`, `VPS_PORT`.
 - Ensures the repo remote uses the token URL:
-  `https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/kakkadpriyansh/happyfeet.git`.
-- Runs `git fetch` and `git reset --hard origin/main` in `/var/www/happyfeet`.
+  `https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/kakkadpriyansh/OneStopFashion.git`.
+- Runs `git fetch` and `git reset --hard origin/main` in `/var/www/onestopfashion`.
 - Installs dependencies and builds:
   `npm ci --legacy-peer-deps || npm install --legacy-peer-deps && npm run build`.
-- Restarts the app via PM2: `pm2 restart happyfeet --update-env` (or starts it if missing) and `pm2 save`.
+- Restarts the app via PM2: `pm2 restart onestopfashion --update-env` (or starts it if missing) and `pm2 save`.
 
 Why `--legacy-peer-deps`?
 - The project uses React 19, and some packages (e.g., `vaul@0.9.x`) still declare peers up to React 18.
@@ -258,7 +258,7 @@ Why `--legacy-peer-deps`?
 
 Troubleshooting
 - npm ERESOLVE peer conflicts: Confirm the workflow includes `--legacy-peer-deps`; align dependencies when possible.
-- Permission issues on `/var/www/happyfeet`: ensure the deploy user owns the directory (`chown -R <user> /var/www/happyfeet`).
+- Permission issues on `/var/www/onestopfashion`: ensure the deploy user owns the directory (`chown -R <user> /var/www/onestopfashion`).
 - PM2 not found: install globally (`npm i -g pm2`) and ensure it’s on `PATH`.
 - Token errors when pulling: verify `GIT_TOKEN` is valid, not expired, and has `repo` or fine‑grained Contents: Read access.
 - Private repo via SSH (alternative): add the VPS public key as a GitHub Deploy Key and switch the remote to `git@github.com:<owner>/<repo>.git`.
@@ -315,4 +315,4 @@ pnpm update
 
 ---
 
-**HappyFeet** - Your complete e-commerce solution! 🛍️
+**One Stop Fashion** - Your complete e-commerce solution! 🛍️
