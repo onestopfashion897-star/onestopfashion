@@ -428,6 +428,32 @@ export default function ProductsPage() {
 
               <Separator />
 
+              {/* Sizes */}
+              <div className="mb-6 mt-6">
+                <h4 className="font-semibold mb-4 text-gray-900">Sizes</h4>
+                <div className="grid grid-cols-3 gap-2">
+                  {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
+                    <Button
+                      key={size}
+                      variant={selectedSizes.includes(size) ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => {
+                        setSelectedSizes(prev => 
+                          prev.includes(size) 
+                            ? prev.filter(s => s !== size)
+                            : [...prev, size]
+                        )
+                      }}
+                      className="rounded-lg"
+                    >
+                      {size}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              <Separator />
+
               {/* Price Range */}
               <div className="mb-6 mt-6">
                 <h4 className="font-semibold mb-4 text-gray-900">Price Range</h4>
@@ -511,6 +537,32 @@ export default function ProductsPage() {
                         />
                         <label htmlFor={`mobile-${brand._id?.toString()}`} className="text-sm">{brand.name}</label>
                       </div>
+                    ))}
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Sizes */}
+                <div>
+                  <h4 className="font-medium mb-3">Sizes</h4>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
+                      <Button
+                        key={size}
+                        variant={selectedSizes.includes(size) ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => {
+                          setSelectedSizes(prev => 
+                            prev.includes(size) 
+                              ? prev.filter(s => s !== size)
+                              : [...prev, size]
+                          )
+                        }}
+                        className="rounded-lg"
+                      >
+                        {size}
+                      </Button>
                     ))}
                   </div>
                 </div>

@@ -24,7 +24,7 @@ import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navbar } from '@/components/ui/navbar'
 import { useToast } from '@/hooks/use-toast'
-import { RazorpayScript } from '@/components/razorpay-script'
+
 import Image from 'next/image'
 
 interface Address {
@@ -56,7 +56,7 @@ export default function CheckoutPage() {
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null)
   const [savedAddresses, setSavedAddresses] = useState<Address[]>([])
   const [addressesLoading, setAddressesLoading] = useState(false)
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('razorpay')
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('cod')
   const [couponCode, setCouponCode] = useState('')
   const [couponDiscount, setCouponDiscount] = useState(0)
   const [couponLoading, setCouponLoading] = useState(false)
@@ -67,10 +67,28 @@ export default function CheckoutPage() {
 
   const paymentMethods: PaymentMethod[] = [
     {
-      id: 'razorpay',
-      name: 'Online Payment',
+      id: 'debit-card',
+      name: 'Debit Card',
       icon: '💳',
-      description: 'Pay securely with UPI, Cards, Net Banking'
+      description: 'Not available for your location'
+    },
+    {
+      id: 'credit-card',
+      name: 'Credit Card',
+      icon: '💳',
+      description: 'Not available for your location'
+    },
+    {
+      id: 'upi',
+      name: 'UPI',
+      icon: '📱',
+      description: 'Not available for your location'
+    },
+    {
+      id: 'cod',
+      name: 'Cash on Delivery',
+      icon: '💵',
+      description: 'Pay when you receive'
     }
   ]
 
@@ -374,7 +392,7 @@ export default function CheckoutPage() {
           productId: item.productId,
           name: item.name,
           quantity: item.quantity,
-          price: item.offerPrice || item.price, // Use offer price if available
+          price: item.offerPrice || item.price,
           size: item.size,
           image: item.image
         })),
@@ -393,10 +411,6 @@ export default function CheckoutPage() {
         total: total
       }
 
-      console.log('Creating order with payload:', orderPayload)
-      console.log('Auth token:', localStorage.getItem('authToken')?.substring(0, 20) + '...')
-
-      // Create order
       const orderResponse = await fetch('/api/orders', {
         method: 'POST',
         headers: {
@@ -406,20 +420,15 @@ export default function CheckoutPage() {
         body: JSON.stringify(orderPayload),
       })
 
-      console.log('Order response status:', orderResponse.status)
       const orderData = await orderResponse.json()
-      console.log('Order response data:', orderData)
 
       if (!orderData.success) {
-        console.error('Order creation failed:', orderData.error)
         throw new Error(orderData.error || 'Failed to create order')
       }
 
-      // Handle Razorpay payment
-      if (selectedPaymentMethod === 'razorpay') {
-        // For Razorpay orders, create payment order and open payment modal
-        await handleRazorpayPayment(orderData.data.order._id, total)
-      }
+      const orderId = orderData.data.order._id
+      router.push(`/order-confirmation?orderId=${orderId}`)
+      setTimeout(() => clearCart(), 500)
     } catch (error) {
       console.error('Order creation error:', error)
       toast({
@@ -427,14 +436,12 @@ export default function CheckoutPage() {
         description: "Please try again",
         variant: "destructive",
       })
-    } finally {
       setLoading(false)
     }
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      <RazorpayScript />
       <Navbar />
       <div className="container mx-auto px-4 py-8 pt-20">
         {/* Header */}
@@ -503,31 +510,49 @@ export default function CheckoutPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="grid gap-4">
-                    {paymentMethods.map((method) => (
-                      <div
-                        key={method.id}
-                        className={`p-4 border-2 rounded-2xl cursor-pointer transition-all ${
-                          selectedPaymentMethod === method.id
-                            ? 'border-blue-500 bg-blue-50'
-                            : 'border-gray-200 hover:border-blue-300'
-                        }`}
-                        onClick={() => setSelectedPaymentMethod(method.id)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-4">
-                            <span className="text-2xl">{method.icon}</span>
-                            <div>
-                              <h3 className="font-semibold text-gray-900">{method.name}</h3>
-                              <p className="text-sm text-gray-600">{method.description}</p>
-                            </div>
-                          </div>
-                          {selectedPaymentMethod === method.id && (
-                            <CheckCircle className="w-6 h-6 text-blue-600" />
-                          )}
-                        </div>
+                  <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
+                      <div>
+                        <h4 className="font-semibold text-yellow-800">Payment Notice</h4>
+                        <p className="text-sm text-yellow-700">Only Cash on Delivery is available for your location at this time.</p>
                       </div>
-                    ))}
+                    </div>
+                  </div>
+                  <div className="grid gap-4">
+                    {paymentMethods.map((method) => {
+                      const isDisabled = method.id !== 'cod'
+                      return (
+                        <div
+                          key={method.id}
+                          className={`p-4 border-2 rounded-2xl transition-all ${
+                            isDisabled
+                              ? 'border-gray-200 bg-gray-50 opacity-60 cursor-not-allowed'
+                              : selectedPaymentMethod === method.id
+                              ? 'border-blue-500 bg-blue-50 cursor-pointer'
+                              : 'border-gray-200 hover:border-blue-300 cursor-pointer'
+                          }`}
+                          onClick={() => !isDisabled && setSelectedPaymentMethod(method.id)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                              <span className="text-2xl">{method.icon}</span>
+                              <div>
+                                <h3 className={`font-semibold ${isDisabled ? 'text-gray-500' : 'text-gray-900'}`}>
+                                  {method.name}
+                                </h3>
+                                <p className={`text-sm ${isDisabled ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  {method.description}
+                                </p>
+                              </div>
+                            </div>
+                            {selectedPaymentMethod === method.id && !isDisabled && (
+                              <CheckCircle className="w-6 h-6 text-blue-600" />
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
 
                   {/* Security Notice */}

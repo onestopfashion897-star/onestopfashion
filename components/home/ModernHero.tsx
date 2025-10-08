@@ -74,6 +74,11 @@ export function ModernHero() {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
   }
 
+  useEffect(() => {
+    const interval = setInterval(nextSlide, 3000)
+    return () => clearInterval(interval)
+  }, [slides.length])
+
   if (slides.length === 0) {
     return null
   }
@@ -90,20 +95,19 @@ export function ModernHero() {
         {/* Badge */}
         <div className="text-center mb-4">
           <span className="inline-block px-5 py-1.5 border border-white/30 rounded-full text-xs text-gray-300">
-            New spring collection 2023
+            New Collection 2025
           </span>
         </div>
 
         {/* Main Heading */}
         <div className="text-center mb-4 max-w-4xl mx-auto">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-3">
-            Where style speaks, trends resonate,
+            Fashion for Everyone,
             <br />
-            fashion flourishes
+            Style for Every Occasion
           </h1>
           <p className="text-gray-400 text-sm md:text-base max-w-2xl mx-auto">
-            Unveiling a fashion destination where trends blend seamlessly with your
-            individual style aspirations. Discover today!
+            Discover premium clothing for Men, Women, and Kids. Quality fashion that fits your lifestyle.
           </p>
         </div>
 

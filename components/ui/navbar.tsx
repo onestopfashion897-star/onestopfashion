@@ -96,25 +96,21 @@ export function Navbar() {
             </Link>
 
             {/* Desktop Navigation */}
-            <div 
-              className="hidden md:flex items-center space-x-8"
-              onMouseEnter={handleNavInteraction}
-              onFocus={handleNavInteraction}
-            >
+            <div className="hidden md:flex items-center space-x-8">
               <Link href="/" className="text-white hover:text-gray-300 transition-colors font-medium">
                 Home
               </Link>
-              <Link href="/products" className="text-gray-300 hover:text-white transition-colors">
-                Shop
+              <Link href="/products?category=men" className="text-white hover:text-gray-300 transition-colors">
+                Men
               </Link>
-              <Link href="/products" className="text-gray-300 hover:text-white transition-colors">
+              <Link href="/products?category=women" className="text-white hover:text-gray-300 transition-colors">
+                Women
+              </Link>
+              <Link href="/products?category=kids" className="text-white hover:text-gray-300 transition-colors">
+                Kids
+              </Link>
+              <Link href="/products" className="text-white hover:text-gray-300 transition-colors">
                 Sale
-              </Link>
-              <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
-                Blog
-              </Link>
-              <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">
-                Showcase
               </Link>
             </div>
 
@@ -127,17 +123,22 @@ export function Navbar() {
                   placeholder="Search products..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 rounded-full bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-white/40 focus:ring-white/20"
+                  className="pl-10 pr-4 rounded-full bg-white/10 border-white/20 text-white placeholder:text-gray-300 focus:border-white/40 focus:ring-white/20"
                 />
               </form>
             </div>
 
             {/* Right Side Actions */}
             <div className="flex items-center space-x-4">
-              {/* Wishlist */}
+              {/* Cart */}
               <Link href="/cart">
                 <Button variant="ghost" size="icon" className="relative text-white hover:bg-white/10">
                   <ShoppingCart className="w-5 h-5" />
+                  {getCartCount() > 0 && (
+                    <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs bg-red-500 flex items-center justify-center">
+                      {getCartCount()}
+                    </Badge>
+                  )}
                 </Button>
               </Link>
 
@@ -146,67 +147,24 @@ export function Navbar() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="text-white hover:bg-white/10">
-                      Login
+                      <User className="w-4 h-4 mr-2" />
+                      {user.name}
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-64">
-                    <DropdownMenuLabel className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center">
-                        <span className="text-white font-bold text-sm">
-                          {user.name.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                      <div>
-                        <div className="font-semibold">{user.name}</div>
-                        <div className="text-xs text-gray-500">{user.email}</div>
-                        {isAdmin && (
-                          <div className="flex items-center gap-1 text-xs text-purple-600">
-                            <Crown className="w-3 h-3" />
-                            Admin
-                          </div>
-                        )}
-                      </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
+                  <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem asChild>
-                      <Link href="/account" className="flex items-center gap-2">
-                        <User className="w-4 h-4" />
-                        Profile
-                      </Link>
+                      <Link href="/account">Profile</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/account/orders" className="flex items-center gap-2">
-                        <ShoppingCart className="w-4 h-4" />
-                        Orders
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/account/wishlist" className="flex items-center gap-2">
-                        <Heart className="w-4 h-4" />
-                        Wishlist
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/account/addresses" className="flex items-center gap-2">
-                        <Settings className="w-4 h-4" />
-                        Addresses
-                      </Link>
+                      <Link href="/account/orders">Orders</Link>
                     </DropdownMenuItem>
                     {isAdmin && (
-                      <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                          <Link href="/admin" className="flex items-center gap-2 text-purple-600 font-medium">
-                            <Crown className="w-4 h-4" />
-                            Admin Panel
-                          </Link>
-                        </DropdownMenuItem>
-                      </>
+                      <DropdownMenuItem asChild>
+                        <Link href="/admin">Admin Panel</Link>
+                      </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-                      Logout
-                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : loading ? (
@@ -257,23 +215,18 @@ export function Navbar() {
 
               {/* Mobile Navigation Links */}
               <div className="space-y-2">
-                <Link
-                  href="/products"
-                  className="block py-2 text-gray-700 hover:text-purple-600 transition-colors font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Products
+                <Link href="/products?category=men" className="block py-2 text-white hover:text-gray-300" onClick={() => setIsMenuOpen(false)}>
+                  Men
                 </Link>
-                {categories.map((category) => (
-                  <Link
-                    key={category._id}
-                    href={`/products?category=${category.slug}`}
-                    className="block py-2 text-gray-700 hover:text-purple-600 transition-colors capitalize"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {category.name}
-                  </Link>
-                ))}
+                <Link href="/products?category=women" className="block py-2 text-white hover:text-gray-300" onClick={() => setIsMenuOpen(false)}>
+                  Women
+                </Link>
+                <Link href="/products?category=kids" className="block py-2 text-white hover:text-gray-300" onClick={() => setIsMenuOpen(false)}>
+                  Kids
+                </Link>
+                <Link href="/products" className="block py-2 text-white hover:text-gray-300" onClick={() => setIsMenuOpen(false)}>
+                  Sale
+                </Link>
               </div>
 
               {/* Mobile Auth */}

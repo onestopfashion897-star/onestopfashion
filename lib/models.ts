@@ -371,7 +371,20 @@ export class ProductService {
 // Order operations
 export class OrderService {
   static async createOrder(orderData: Omit<Order, '_id' | 'createdAt' | 'updatedAt'>): Promise<Order> {
-    return DatabaseService.create<Order>(COLLECTIONS.ORDERS, orderData)
+    const now = new Date()
+    const estimatedDelivery = new Date(now)
+    estimatedDelivery.setDate(estimatedDelivery.getDate() + 6)
+    
+    const orderWithDelivery = {
+      ...orderData,
+      estimatedDelivery: estimatedDelivery.toLocaleDateString('en-IN', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      })
+    }
+    
+    return DatabaseService.create<Order>(COLLECTIONS.ORDERS, orderWithDelivery)
   }
 
   static async findById(id: string): Promise<Order | null> {
