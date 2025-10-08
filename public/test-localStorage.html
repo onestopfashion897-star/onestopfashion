@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test localStorage Token</title>
+</head>
+<body>
+    <h1>Test localStorage Token</h1>
+    <div id="output"></div>
+    
+    <script>
+        // Get a fresh token first
+        async function getToken() {
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'test@example.com',
+                        password: 'password123'
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    const token = data.data.token;
+                    localStorage.setItem('authToken', token);
+                    document.getElementById('output').innerHTML += '<p>Token saved to localStorage: ' + token.substring(0, 50) + '...</p>';
+                    
+                    // Test the token immediately
+                    testToken(token);
+                } else {
+                    document.getElementById('output').innerHTML += '<p>Login failed: ' + data.error + '</p>';
+                }
+            } catch (error) {
+                document.getElementById('output').innerHTML += '<p>Error: ' + error.message + '</p>';
+            }
+        }
+        
+        async function testToken(token) {
+            try {
+                const response = await fetch('/api/auth/me', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('output').innerHTML += '<p>Token validation successful! User: ' + data.data.user.name + '</p>';
+                    document.getElementById('output').innerHTML += '<p>Now refresh this page to test persistence...</p>';
+                } else {
+                    document.getElementById('output').innerHTML += '<p>Token validation failed</p>';
+                }
+            } catch (error) {
+                document.getElementById('output').innerHTML += '<p>Token test error: ' + error.message + '</p>';
+            }
+        }
+        
+        function checkExistingToken() {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                document.getElementById('output').innerHTML += '<p>Found existing token: ' + token.substring(0, 50) + '...</p>';
+                testToken(token);
+            } else {
+                document.getElementById('output').innerHTML += '<p>No existing token found</p>';
+                getToken();
+            }
+        }
+        
+        // Run on page load
+        checkExistingToken();
+    </script>
+</body>
+</html>

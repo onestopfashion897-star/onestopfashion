@@ -1,0 +1,9 @@
+{
+  "email": "kakkadpriyansh@gmail.com",
+  "password": "$2b$12$296ZJkW4ibnY37Lnb.Llh.KZsPb3uxGQks07.x3M0PIE59LWiuiju",
+  "name": "Master Admin",
+  "role": "super_admin",
+  "isActive": true,
+  "createdAt": "2024-01-15T00:00:00.000Z",
+  "updatedAt": "2024-01-15T00:00:00.000Z"
+}
