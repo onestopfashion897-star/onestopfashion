@@ -18,12 +18,12 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             set -e
-            cd /var/www/happyfeet
+            cd /var/www/onestopfashionbrandshionbrand
             # Ensure repo exists; clone if missing
             if [ ! -d .git ]; then
-              git clone https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/kakkadpriyansh/happyfeet.git .
+              git clone https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/kakkadpriyansh/onestopfashionbrand.git .
             else
-              git remote set-url origin https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/kakkadpriyansh/happyfeet.git
+              git remote set-url origin https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/kakkadpriyansh/onestopfashionbrand.git
             fi
             git fetch --all
             git reset --hard origin/main
@@ -36,7 +36,7 @@ jobs:
             fi
             # Restart PM2 app (start if not running)
             if command -v pm2 >/dev/null 2>&1; then
-              pm2 restart happyfeet --update-env || pm2 start npm --name happyfeet -- start
+              pm2 restart onestopfashionbrand --update-env || pm2 start npm --name onestopfashionbrand -- start
               pm2 save
             else
               echo "pm2 is not installed on VPS" && exit 1

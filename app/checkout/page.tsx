@@ -284,7 +284,7 @@ export default function CheckoutPage() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: razorpayOrderData.data.amount,
         currency: razorpayOrderData.data.currency,
-        name: 'HappyFeet Store',
+        name: 'onestopfashionbrand Store',
         description: 'Order Payment',
         order_id: razorpayOrderData.data.orderId,
         handler: async function (response: any) {

@@ -166,7 +166,7 @@ export default function HelpCenterPage() {
                     <span>Call Us</span>
                   </a>
                   <a 
-                    href="mailto:support@happyfeet.com"
+                    href="mailto:support@onestopfashionbrand.com"
                     className="inline-flex items-center justify-center space-x-2 bg-white text-purple-600 px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
                   >
                     <Mail className="w-5 h-5" />

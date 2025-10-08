@@ -1,10 +1,10 @@
-# Happy Feet Preloader Animation
+# one stop fashion brand Preloader Animation
 
-A beautiful, animated preloader component for the Happy Feet e-commerce website featuring the brand logo with smooth animations.
+A beautiful, animated preloader component for the one stop fashion brand e-commerce website featuring the brand logo with smooth animations.
 
 ## Features
 
-- ✨ Animated Happy Feet logo with pulse effect
+- ✨ Animated one stop fashion brand logo with pulse effect
 - 👣 Walking feet animation with alternating steps
 - 📝 Smooth fade-in text animation
 - ⚡ Bouncing loading dots

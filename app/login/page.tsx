@@ -38,7 +38,7 @@ export default function LoginPage() {
       if (success) {
         toast({
           title: "Login successful!",
-          description: "Welcome back to Happy Feet",
+          description: "Welcome back to One Stop Fashion",
         })
         router.push('/')
       } else {
@@ -63,11 +63,11 @@ export default function LoginPage() {
         <Card className="shadow-xl border-0">
           <CardHeader className="text-center pb-6">
             <div className="w-24 h-24 flex items-center justify-center mx-auto mb-4">
-              <img src="/logo/happy-logo.png" alt="Happy Feet Logo" className="w-24 h-24 object-contain" />
+              <img src="/logo/happy-logo.png" alt="One Stop Fashion Logo" className="w-24 h-24 object-contain" />
             </div>
             <CardTitle className="text-2xl font-bold text-gray-900">Welcome Back</CardTitle>
             <CardDescription className="text-gray-600">
-              Sign in to your Happy Feet account
+              Sign in to your One Stop Fashion account
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">

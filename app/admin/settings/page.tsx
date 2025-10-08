@@ -41,8 +41,8 @@ export default function SettingsPage() {
   
   const [settings, setSettings] = useState({
     // General Settings
-    storeName: "Happy Feet",
-    storeEmail: "admin@happyfeet.com",
+    storeName: "one stop fashion brand",
+    storeEmail: "admin@onestopfashionbrand.com",
     storePhone: "+91 9876543210 ",
     storeAddress: "123 Fashion Street, Delhi, 110001",
     currency: "INR",
@@ -51,7 +51,7 @@ export default function SettingsPage() {
     // Email Settings
     smtpHost: "smtp.gmail.com",
     smtpPort: "587",
-    smtpUser: "noreply@happyfeet.com",
+    smtpUser: "noreply@onestopfashionbrand.com",
     smtpPassword: "********",
     
     // Payment Settings

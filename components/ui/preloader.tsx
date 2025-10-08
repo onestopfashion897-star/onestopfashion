@@ -12,8 +12,8 @@ const Preloader: React.FC<PreloaderProps> = ({ isLoading }) => {
       <div className="flex flex-col items-center gap-6">
         <img
           src="/logo/happy-logo.png"
-          alt="Happy Feet"
-          className="w-40 h-20 md:w-52 md:h-24 object-contain brightness-0 invert"
+          alt="one stop fashion brand"
+          className="w-64 h-32 md:w-80 md:h-40 object-contain brightness-0 invert"
         />
         
         <div className="flex gap-2">

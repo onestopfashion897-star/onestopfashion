@@ -70,7 +70,7 @@ export function HeroBanner({ banners }: HeroBannerProps) {
     return (
       <div className="relative h-[400px] md:h-[500px] bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center">
         <div className="text-center text-white">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">Welcome to Happy Feet</h1>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4">Welcome to one stop fashion brand</h1>
           <p className="text-xl md:text-2xl mb-8">Discover Amazing Products</p>
           <Link href="/products">
             <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100">

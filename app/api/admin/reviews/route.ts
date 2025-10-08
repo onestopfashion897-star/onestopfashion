@@ -44,7 +44,7 @@ export const POST = withAdminAuth(async (request: NextRequest) => {
       status: (status as 'pending' | 'approved' | 'rejected') || 'approved',
       helpful: 0,
       reported: false,
-      reviewerName: reviewerName || 'Happy Feet Customer',
+      reviewerName: reviewerName || 'one stop fashion brand Customer',
       reviewerAvatar: reviewerAvatar || '',
       verifiedPurchase: false,
     }

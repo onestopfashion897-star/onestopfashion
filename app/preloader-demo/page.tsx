@@ -37,11 +37,11 @@ const PreloaderDemo = () => {
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-2xl mx-auto text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-6">
-              Happy Feet Preloader Demo
+              one stop fashion brand Preloader Demo
             </h1>
             
             <p className="text-lg text-gray-600 mb-8">
-              This is a demonstration of the Happy Feet preloader animation. 
+              This is a demonstration of the one stop fashion brand preloader animation. 
               The preloader features the brand logo with smooth animations 
               including walking feet and loading indicators.
             </p>
@@ -62,7 +62,7 @@ const PreloaderDemo = () => {
             <div className="mt-12 p-6 bg-white rounded-lg shadow-sm border">
               <h2 className="text-xl font-semibold mb-4">Features:</h2>
               <ul className="text-left space-y-2 text-gray-600">
-                <li>• Animated Happy Feet logo with pulse effect</li>
+                <li>• Animated one stop fashion brand logo with pulse effect</li>
                 <li>• Walking feet animation with alternating steps</li>
                 <li>• Smooth fade-in text animation</li>
                 <li>• Bouncing loading dots</li>

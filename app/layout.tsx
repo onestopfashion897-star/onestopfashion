@@ -29,7 +29,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className="overflow-x-hidden">
-      <body className="font-sans overflow-x-hidden">
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=TeX+Gyre+Adventor&display=swap" rel="stylesheet" />
+      </head>
+      <body className="overflow-x-hidden" style={{ fontFamily: '"TeX Gyre Adventor", sans-serif' }}>
           <ThemeProvider
             attribute="class"
             defaultTheme="light"

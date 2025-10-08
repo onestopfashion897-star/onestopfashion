@@ -54,8 +54,8 @@ class EmailService {
       port: 587,
       secure: false,
       auth: {
-        user: 'thehappyfeet.in@gmail.com',
-        pass: 'tloz rzgi boki adyv'
+        user: 'onestopfashionbrand@gmail.com',
+        pass: 'xvxy txny xtgj qjzt'
       }
     }
 
@@ -76,7 +76,7 @@ class EmailService {
       const textContent = this.generateOrderConfirmationText(data)
 
       const mailOptions = {
-        from: '"Happy Feet" <thehappyfeet.in@gmail.com>',
+        from: '"One Stop Fashion" <onestopfashionbrand@gmail.com>',
         to: data.customerEmail,
         subject: `Order Confirmation - ${data.orderId}`,
         text: textContent,
@@ -105,9 +105,9 @@ class EmailService {
       const textContent = this.generatePasswordResetText(data)
 
       const mailOptions = {
-        from: '"Happy Feet" <thehappyfeet.in@gmail.com>',
+        from: '"One Stop Fashion" <onestopfashionbrand@gmail.com>',
         to: data.customerEmail,
-        subject: 'Password Reset - Happy Feet',
+        subject: 'Password Reset - One Stop Fashion',
         text: textContent,
         html: htmlContent
       }
@@ -199,15 +199,15 @@ class EmailService {
           <div style="background: #e8f5e8; border: 1px solid #27ae60; border-radius: 8px; padding: 20px; text-align: center;">
             <h3 style="margin: 0 0 10px 0; color: #27ae60;">What's Next?</h3>
             <p style="margin: 5px 0;">• You'll receive a shipping confirmation email once your order is dispatched</p>
-            <p style="margin: 5px 0;">• Track your order anytime at happyfeet.com/track-order</p>
-            <p style="margin: 5px 0;">• Contact us at thehappyfeet.in@gmail.com for any questions</p>
+            <p style="margin: 5px 0;">• Track your order anytime at onestopfashionbrand.com/track-order</p>
+            <p style="margin: 5px 0;">• Contact us at onestopfashionbrand@gmail.com for any questions</p>
           </div>
         </div>
 
         <div style="background: #2c3e50; color: white; padding: 20px; text-align: center; border-radius: 0 0 10px 10px;">
           <p style="margin: 0; font-size: 14px;">
-            Thank you for shopping with Happy Feet!<br>
-            <a href="mailto:support@happyfeet.com" style="color: #3498db;">support@happyfeet.com</a> | 
+            Thank you for shopping with One Stop Fashion!<br>
+            <a href="mailto:support@onestopfashionbrand.com" style="color: #3498db;">support@onestopfashionbrand.com</a> | 
             <a href="tel:+919876543210 " style="color: #3498db;">+91 97694 95910</a>
           </p>
         </div>
@@ -244,11 +244,11 @@ Phone: ${data.shippingAddress.phone}
 
 What's Next?
 • You'll receive a shipping confirmation email once your order is dispatched
-• Track your order anytime at happyfeet.com/track-order
-• Contact us at support@happyfeet.com for any questions
+• Track your order anytime at onestopfashionbrand.com/track-order
+• Contact us at support@onestopfashionbrand.com for any questions
 
-Thank you for shopping with Happy Feet!
-support@happyfeet.com | +91 98765 43210
+Thank you for shopping with One Stop Fashion!
+support@onestopfashionbrand.com | +91 98765 43210
     `
   }
 
@@ -259,7 +259,7 @@ support@happyfeet.com | +91 98765 43210
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Password Reset - Happy Feet</title>
+        <title>Password Reset - One Stop Fashion</title>
       </head>
       <body style="margin: 0; padding: 20px; font-family: Arial, sans-serif; background-color: #f5f5f5;">
         <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
@@ -271,7 +271,7 @@ support@happyfeet.com | +91 98765 43210
           <div style="background: white; padding: 30px; border: 1px solid #ddd; border-top: none;">
             <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
               <h2 style="margin: 0 0 15px 0; color: #2c3e50;">Hello ${data.customerName}!</h2>
-              <p style="margin: 5px 0; color: #555;">We've generated a new password for your Happy Feet account as requested.</p>
+              <p style="margin: 5px 0; color: #555;">We've generated a new password for your One Stop Fashion account as requested.</p>
             </div>
 
             <div style="background: #e8f4fd; border: 2px solid #3498db; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center;">
@@ -293,15 +293,15 @@ support@happyfeet.com | +91 98765 43210
 
             <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 30px;">
               <h3 style="margin: 0 0 10px 0; color: #27ae60;">Need Help?</h3>
-              <p style="margin: 5px 0;">• Contact us at thehappyfeet.in@gmail.com for any questions</p>
+              <p style="margin: 5px 0;">• Contact us at onestopfashionbrand@gmail.com for any questions</p>
               <p style="margin: 5px 0;">• Visit our help center for account security tips</p>
             </div>
           </div>
 
           <div style="background: #2c3e50; color: white; padding: 20px; text-align: center; border-radius: 0 0 10px 10px;">
             <p style="margin: 0; font-size: 14px;">
-              Thank you for choosing Happy Feet!<br>
-              <a href="mailto:thehappyfeet.in@gmail.com" style="color: #3498db;">thehappyfeet.in@gmail.com</a> | 
+              Thank you for choosing One Stop Fashion!<br>
+              <a href="mailto:onestopfashionbrand@gmail.com" style="color: #3498db;">onestopfashionbrand@gmail.com</a> | 
               <a href="tel:+919876543210 " style="color: #3498db;">+91 97694 95910</a>
             </p>
           </div>
@@ -313,11 +313,11 @@ support@happyfeet.com | +91 98765 43210
 
   private generatePasswordResetText(data: PasswordResetData): string {
     return `
-Password Reset - Happy Feet
+Password Reset - One Stop Fashion
 
 Hello ${data.customerName}!
 
-We've generated a new password for your Happy Feet account as requested.
+We've generated a new password for your One Stop Fashion account as requested.
 
 Your New Password: ${data.newPassword}
 
@@ -326,14 +326,14 @@ Important Security Notice:
 • Use a strong, unique password for your account
 • Never share your password with anyone
 
-Login to your account: https://happyfeet.com/login
+Login to your account
 
 Need Help?
-• Contact us at support@happyfeet.com for any questions
+• Contact us at support@onestopfashionbrandshionbrand.com for any questions
 • Visit our help center for account security tips
 
-Thank you for choosing Happy Feet!
-thehappyfeet.in@gmail.com | +91 97694 95910
+Thank you for choosing One Stop Fashion!
+onestopfashionbrand@gmail.com | +91 97694 95910
     `
   }
 }

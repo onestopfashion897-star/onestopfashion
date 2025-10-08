@@ -13,23 +13,23 @@ interface Brand {
 }
 
 interface BrandCarouselProps {
-  brands?: Brand[] // Made optional since we'll use hardcoded Happy Feet brand
+  brands?: Brand[] // Made optional since we'll use hardcoded one stop fashion brand brand
 }
 
 export function BrandCarousel({ brands }: BrandCarouselProps) {
   const [isMobile, setIsMobile] = useState(false)
   
-  // Hardcoded Happy Feet brand
-  const happyFeetBrand: Brand = {
-    _id: 'happy-feet-brand',
-    name: 'Happy Feet',
-    slug: 'happy-feet',
+  // Hardcoded one stop fashion brand brand
+  const onestopfashionbrandBrand: Brand = {
+    _id: 'one-stopfashionbrand-brand',
+    name: 'one stop fashion brand',
+    slug: 'one-stopfashionbrand',
     logoUrl: '/logo/happy-logo.png',
     website: '',
     isActive: true
   }
   
-  const activeBrands = [happyFeetBrand] // Only show Happy Feet brand
+  const activeBrands = [onestopfashionbrandBrand] // Only show one stop fashion brand brand
   
   useEffect(() => {
     const checkMobile = () => {
@@ -51,10 +51,10 @@ export function BrandCarousel({ brands }: BrandCarouselProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-12 md:p-16 text-center">
           <div className="flex justify-center mb-6">
-            <img src="/logo/happy-logo.png" alt="Happy Feet" className="h-16 md:h-20 object-contain" />
+            <img src="/logo/happy-logo.png" alt="one stop fashion brand" className="h-16 md:h-20 object-contain" />
           </div>
           <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-            Happy Feet
+            one stop fashion brand
           </h2>
           <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto">
             Your trusted brand for premium quality footwear, comfort and style

@@ -52,7 +52,7 @@ export function ProductCard({ product }: ProductCardProps) {
       ? (product.brand as any).name as string
       : typeof product.brand === 'string'
       ? (product.brand as string)
-      : 'Happy Feet'
+      : 'one stop fashion brand'
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()

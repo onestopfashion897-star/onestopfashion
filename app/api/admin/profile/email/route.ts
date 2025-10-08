@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
 // Mock admin data - in a real app, this would be stored in a database
 let adminData = {
-  email: 'admin@happyfeet.com',
+  email: 'admin@onestopfashionbrand.com',
   password: 'admin123' // In real app, this would be hashed
 }
 

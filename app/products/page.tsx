@@ -61,10 +61,10 @@ export default function ProductsPage() {
 
   const fetchData = async () => {
     try {
-      // Fetch categories and brands with products only
+      // Fetch all active categories and brands
       const [categoriesRes, brandsRes] = await Promise.all([
-        fetch('/api/categories?withProducts=true'),
-        fetch('/api/brands?withProducts=true')
+        fetch('/api/categories?isActive=true'),
+        fetch('/api/brands?isActive=true')
       ])
       
       const categoriesData = await categoriesRes.json()

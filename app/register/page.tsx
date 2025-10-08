@@ -64,7 +64,7 @@ export default function RegisterPage() {
       if (success) {
         toast({
           title: "Registration successful!",
-          description: "Welcome to Happy Feet",
+          description: "Welcome to One Stop Fashion",
         })
         router.push('/')
       } else {
@@ -89,11 +89,11 @@ export default function RegisterPage() {
         <Card className="shadow-xl border-0">
           <CardHeader className="text-center pb-6">
             <div className="w-24 h-24 flex items-center justify-center mx-auto mb-4">
-              <img src="/logo/happy-logo.png" alt="Happy Feet Logo" className="w-24 h-24 object-contain" />
+              <img src="/logo/happy-logo.png" alt="One Stop Fashion Logo" className="w-24 h-24 object-contain" />
             </div>
             <CardTitle className="text-2xl font-bold text-gray-900">Create Account</CardTitle>
             <CardDescription className="text-gray-600">
-              Join Happy Feet and start shopping
+              Join One Stop Fashion and start shopping
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">

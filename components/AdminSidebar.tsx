@@ -67,7 +67,7 @@ export default function AdminSidebar({ sidebarOpen = false, setSidebarOpen }: Ad
         <div className="flex items-center justify-between h-16 px-6 border-b flex-shrink-0">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 flex items-center justify-center">
-              <img src="/logo/happy-logo.png" alt="Happy Feet Logo" className="w-8 h-8 object-contain" />
+              <img src="/logo/happy-logo.png" alt="one stop fashion brand Logo" className="w-8 h-8 object-contain" />
             </div>
             <span className="text-xl font-bold text-gray-900">Admin Panel</span>
           </div>

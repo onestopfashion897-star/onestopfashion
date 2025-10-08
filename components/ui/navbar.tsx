@@ -89,17 +89,14 @@ export function Navbar() {
             {/* Logo */}
             <Link href="/" className="flex items-center">
               <img 
-                src="/logo/happy-logo.png" 
-                alt="One Stop Fashion Logo" 
-                className="w-24 h-12 object-contain"
+                src="/logo/navbarlogo.png" 
+                alt="OneStop Fashion" 
+                className="h-12 w-auto object-contain"
               />
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              <Link href="/" className="text-white hover:text-gray-300 transition-colors font-medium">
-                Home
-              </Link>
+            <div className="hidden md:flex items-center space-x-8 ml-12">
               <Link href="/products?category=men" className="text-white hover:text-gray-300 transition-colors">
                 Men
               </Link>

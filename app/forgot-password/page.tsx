@@ -8,18 +8,21 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Mail, ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react'
+import { Mail, ArrowLeft, CheckCircle, AlertCircle, Lock } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 
 export default function ForgotPasswordPage() {
+  const [step, setStep] = useState<'email' | 'otp' | 'success'>('email')
   const [email, setEmail] = useState('')
+  const [otp, setOtp] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
   const { toast } = useToast()
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     
@@ -28,7 +31,6 @@ export default function ForgotPasswordPage() {
       return
     }
 
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       setError('Please enter a valid email address')
@@ -38,38 +40,65 @@ export default function ForgotPasswordPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch('/api/auth/forgot-password', {
+      const response = await fetch('/api/auth/send-otp', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.toLowerCase().trim() }),
       })
 
       const data = await response.json()
 
       if (data.success) {
-        setIsSuccess(true)
-        toast({
-          title: "Password Reset Sent",
-          description: data.message,
-        })
+        setStep('otp')
+        toast({ title: "OTP Sent", description: "Check your email for the OTP" })
       } else {
-        setError(data.error || 'Failed to send password reset email')
-        toast({
-          title: "Error",
-          description: data.error || 'Failed to send password reset email',
-          variant: "destructive",
-        })
+        setError(data.error || 'Failed to send OTP')
       }
     } catch (error) {
-      console.error('Forgot password error:', error)
       setError('Network error occurred. Please try again.')
-      toast({
-        title: "Network Error",
-        description: "Please check your connection and try again.",
-        variant: "destructive",
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleVerifyOTP = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+
+    if (!otp || !newPassword || !confirmPassword) {
+      setError('Please fill all fields')
+      return
+    }
+
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+
+    if (newPassword.length < 6) {
+      setError('Password must be at least 6 characters')
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp, newPassword }),
       })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setStep('success')
+        toast({ title: "Password Reset", description: "Your password has been reset successfully" })
+      } else {
+        setError(data.error || 'Failed to reset password')
+      }
+    } catch (error) {
+      setError('Network error occurred. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -79,7 +108,7 @@ export default function ForgotPasswordPage() {
     router.push('/login')
   }
 
-  if (isSuccess) {
+  if (step === 'success') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
@@ -90,15 +119,14 @@ export default function ForgotPasswordPage() {
               </div>
               <CardTitle className="text-green-800">Email Sent Successfully!</CardTitle>
               <CardDescription className="text-green-600">
-                We've sent a new password to your email address
+                Your password has been reset successfully
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Alert className="border-green-200 bg-green-50">
                 <Mail className="h-4 w-4 text-green-600" />
                 <AlertDescription className="text-green-700">
-                  Please check your inbox for an email from Happy Feet with your new password. 
-                  Don't forget to check your spam folder if you don't see it in your inbox.
+                  You can now login with your new password.
                 </AlertDescription>
               </Alert>
               
@@ -116,18 +144,75 @@ export default function ForgotPasswordPage() {
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Back to Login
                 </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    setIsSuccess(false)
-                    setEmail('')
-                    setError('')
-                  }}
-                  className="w-full"
-                >
-                  Send Another Reset Email
-                </Button>
+
               </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
+  if (step === 'otp') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Verify OTP</CardTitle>
+              <CardDescription>Enter the OTP sent to {email}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleVerifyOTP} className="space-y-4">
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="otp">OTP</Label>
+                  <Input
+                    id="otp"
+                    type="text"
+                    placeholder="Enter 6-digit OTP"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    maxLength={6}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="newPassword">New Password</Label>
+                  <Input
+                    id="newPassword"
+                    type="password"
+                    placeholder="Enter new password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="Confirm new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                </div>
+
+                <Button type="submit" disabled={isLoading} className="w-full">
+                  {isLoading ? 'Resetting...' : 'Reset Password'}
+                </Button>
+
+                <Button type="button" variant="outline" onClick={() => setStep('email')} className="w-full">
+                  Back
+                </Button>
+              </form>
             </CardContent>
           </Card>
         </div>
@@ -143,7 +228,7 @@ export default function ForgotPasswordPage() {
             Forgot Password
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Enter your email address and we'll send you a new password
+            Enter your email to receive an OTP
           </p>
         </div>
 
@@ -154,11 +239,11 @@ export default function ForgotPasswordPage() {
               Reset Your Password
             </CardTitle>
             <CardDescription>
-              We'll generate a new password and send it to your email address
+              We'll send an OTP to your email address
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSendOTP} className="space-y-4">
               {error && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
@@ -187,15 +272,9 @@ export default function ForgotPasswordPage() {
                 className="w-full"
               >
                 {isLoading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Sending Reset Email...
-                  </>
+                  'Sending OTP...'
                 ) : (
-                  <>
-                    <Mail className="mr-2 h-4 w-4" />
-                    Send New Password
-                  </>
+                  'Send OTP'
                 )}
               </Button>
             </form>
@@ -224,8 +303,8 @@ export default function ForgotPasswordPage() {
         <div className="text-center">
           <p className="text-xs text-gray-400">
             Having trouble? Contact us at{' '}
-            <a href="mailto:support@happyfeet.com" className="text-blue-600 hover:text-blue-500">
-              support@happyfeet.com
+            <a href="mailto:support@onestopfashionbrand.com" className="text-blue-600 hover:text-blue-500">
+              support@onestopfashionbrand.com
             </a>
           </p>
         </div>

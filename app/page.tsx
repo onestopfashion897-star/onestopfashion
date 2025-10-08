@@ -140,6 +140,45 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Testimonials */}
+      <section className="py-16 bg-gray-50 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
+              What Our Customers Say
+            </h2>
+            <p className="text-gray-500">Trusted by thousands of happy customers</p>
+          </div>
+          
+          <div className="relative">
+            <div className="flex animate-scroll gap-6">
+              {[
+                { name: "Priya Sharma", text: "Amazing quality and fast delivery! The clothes fit perfectly and the fabric is excellent.", rating: 5 },
+                { name: "Rahul Verma", text: "Best online shopping experience. Great collection and customer service is top-notch!", rating: 5 },
+                { name: "Anita Desai", text: "Love the variety of products. The prices are reasonable and quality is superb.", rating: 5 },
+                { name: "Vikram Singh", text: "Highly recommend! Fast shipping and the products look exactly like the pictures.", rating: 5 },
+                { name: "Sneha Patel", text: "Excellent quality clothing at affordable prices. Will definitely shop again!", rating: 5 },
+                { name: "Arjun Kumar", text: "Great experience from start to finish. The customer support team is very helpful.", rating: 5 },
+                { name: "Priya Sharma", text: "Amazing quality and fast delivery! The clothes fit perfectly and the fabric is excellent.", rating: 5 },
+                { name: "Rahul Verma", text: "Best online shopping experience. Great collection and customer service is top-notch!", rating: 5 },
+              ].map((testimonial, index) => (
+                <div key={index} className="flex-shrink-0 w-80 bg-black p-6 rounded-xl shadow-sm">
+                  <div className="flex mb-3">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <p className="text-gray-300 mb-4 text-sm">"{testimonial.text}"</p>
+                  <p className="font-semibold text-white">{testimonial.name}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Features */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
