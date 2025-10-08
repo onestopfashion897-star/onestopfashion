@@ -1,17 +1,17 @@
 {
-  "name": "happyfeet",
+  "name": "onestopfashion",
   "version": "0.1.0",
   "private": true,
-  "description": "A modern e-commerce platform for footwear and fashion",
+  "description": "A modern e-commerce platform for fashion and lifestyle",
   "author": "Priyansh Kakkad",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kakkadpriyansh/happyfeet.git"
+    "url": "https://github.com/kakkadpriyansh/OneStopFashion.git"
   },
-  "homepage": "https://github.com/kakkadpriyansh/happyfeet",
+  "homepage": "https://github.com/kakkadpriyansh/OneStopFashion",
   "bugs": {
-    "url": "https://github.com/kakkadpriyansh/happyfeet/issues"
+    "url": "https://github.com/kakkadpriyansh/OneStopFashion/issues"
   },
   "keywords": [
     "ecommerce",

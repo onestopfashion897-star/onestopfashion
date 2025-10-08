@@ -10,12 +10,12 @@ import { RazorpayScript } from "@/components/razorpay-script"
 
 
 export const metadata: Metadata = {
-  title: "Happy Feet - Fashion & Lifestyle Store",
+  title: "One Stop Fashion - Fashion & Lifestyle Store",
   description: "Discover the latest trends in fashion, footwear, and lifestyle products. Shop from a curated collection of premium brands.",
   keywords: "fashion, clothing, shoes, lifestyle, shopping, online store",
-  authors: [{ name: "Happy Feet Team" }],
+  authors: [{ name: "One Stop Fashion Team" }],
   openGraph: {
-    title: "Happy Feet - Fashion & Lifestyle Store",
+    title: "One Stop Fashion - Fashion & Lifestyle Store",
     description: "Discover the latest trends in fashion, footwear, and lifestyle products.",
     type: "website",
     locale: "en_US",

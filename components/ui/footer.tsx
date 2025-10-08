@@ -27,7 +27,7 @@ export function Footer() {
           </div>
         </div>
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400">
-          <p>© {new Date().getFullYear()} Happy Feet. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} One Stop Fashion. All rights reserved.</p>
           <p>
             Designed by{' '}
             <Link 

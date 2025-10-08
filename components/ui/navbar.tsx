@@ -90,7 +90,7 @@ export function Navbar() {
             <Link href="/" className="flex items-center">
               <img 
                 src="/logo/happy-logo.png" 
-                alt="Happy Feet Logo" 
+                alt="One Stop Fashion Logo" 
                 className="w-24 h-12 object-contain"
               />
             </Link>

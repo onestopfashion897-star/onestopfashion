@@ -32,7 +32,7 @@ export default function DeliveryPage() {
 
           <section>
             <h2 className="text-xl font-semibold mb-3">Contact Us</h2>
-            <p>For any delivery-related queries, please contact our customer support at support@happyfeet.com or call +91 98765 43210.</p>
+            <p>For any delivery-related queries, please contact our customer support at support@onestopfashion.com or call +91 98765 43210.</p>
           </section>
         </div>
       </div>

@@ -27,7 +27,7 @@ export default function AboutPage() {
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
           <p className="text-gray-600 mb-4">
             Founded with a simple mission - to make quality clothing accessible to everyone. 
-            HappyFeet started as a small family business with a big dream: to provide stylish, 
+            One Stop Fashion started as a small family business with a big dream: to provide stylish, 
             comfortable apparel for Men, Women, and Kids.
           </p>
           <p className="text-gray-600">

@@ -100,7 +100,7 @@ export default function ContactPage() {
                   <Mail className="w-5 h-5 text-purple-600 mt-1" />
                   <div>
                     <h3 className="font-semibold text-gray-900">Email Support</h3>
-                    <p className="text-gray-600">support@happyfeet.com</p>
+                    <p className="text-gray-600">support@onestopfashion.com</p>
                     <p className="text-sm text-gray-500">We'll respond within 24 hours</p>
                   </div>
                 </div>

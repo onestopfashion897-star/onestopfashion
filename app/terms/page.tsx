@@ -16,7 +16,7 @@ export default function TermsPage() {
 
           <div>
             <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Acceptance of Terms</h2>
-            <p className="mb-4">By accessing and using HappyFeet, you accept and agree to be bound by these terms and conditions.</p>
+            <p className="mb-4">By accessing and using One Stop Fashion, you accept and agree to be bound by these terms and conditions.</p>
           </div>
 
           <div>
@@ -36,7 +36,7 @@ export default function TermsPage() {
 
           <div>
             <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Returns & Exchanges</h2>
-            <p className="mb-4">Returns accepted within 7 days of delivery for unused items with tags. Exchanges subject to availability. Contact support@happyfeet.com for assistance.</p>
+            <p className="mb-4">Returns accepted within 7 days of delivery for unused items with tags. Exchanges subject to availability. Contact support@onestopfashion.com for assistance.</p>
           </div>
 
           <div>
@@ -61,7 +61,7 @@ export default function TermsPage() {
 
           <div>
             <h2 className="text-xl font-semibold text-gray-900 mb-3">10. Contact</h2>
-            <p>Email: support@happyfeet.com | Phone: +91 98765 43210</p>
+            <p>Email: support@onestopfashion.com | Phone: +91 98765 43210</p>
           </div>
         </div>
       </div>
