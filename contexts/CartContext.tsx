@@ -10,15 +10,16 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 const defaultCartContext: CartContextType = {
   items: [],
   addItem: () => {},
-  removeItem: () => {},
-  updateQuantity: () => {},
-  clearCart: () => {},
+  removeItem: async () => {},
+  updateQuantity: async () => {},
+  clearCart: async () => {},
   getTotal: () => 0,
   getItemCount: () => 0,
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
+  const [isLoaded, setIsLoaded] = useState(false)
   const { user } = useAuth()
 
   // Load cart from localStorage on mount
@@ -32,19 +33,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem('cart')
       }
     }
+    setIsLoaded(true)
   }, [])
 
   // Save cart to localStorage whenever items change
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(items))
-  }, [items])
+    if (isLoaded) {
+      localStorage.setItem('cart', JSON.stringify(items))
+    }
+  }, [items, isLoaded])
 
   // Sync cart with server when user logs in
   useEffect(() => {
-    if (user) {
+    if (user && isLoaded) {
       syncCartWithServer()
     }
-  }, [user])
+  }, [user, isLoaded])
 
   const syncCartWithServer = async () => {
     try {
@@ -60,9 +64,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (response.ok) {
         const data = await response.json()
         if (data.success) {
-          // Always sync with server cart (whether empty or not)
           const serverItems = data.data.items || []
           setItems(serverItems)
+          localStorage.setItem('cart', JSON.stringify(serverItems))
         }
       }
     } catch (error) {
@@ -75,51 +79,65 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const addItem = (item: CartItem) => {
     setItems(prevItems => {
       const existingIndex = prevItems.findIndex(
-        existing => existing.productId === item.productId && 
-                   existing.size === item.size &&
-                   existing.variantId === item.variantId
+        existing => {
+          const productMatch = existing.productId === item.productId
+          const sizeMatch = existing.size === item.size
+          const variantMatch = item.variantId ? existing.variantId === item.variantId : !existing.variantId
+          return productMatch && sizeMatch && variantMatch
+        }
       )
 
       if (existingIndex >= 0) {
-        // Update existing item quantity
         const updatedItems = [...prevItems]
         updatedItems[existingIndex].quantity += item.quantity
         
-        // Ensure quantity doesn't exceed stock
         if (updatedItems[existingIndex].quantity > item.stock) {
           updatedItems[existingIndex].quantity = item.stock
         }
         
         return updatedItems
       } else {
-        // Add new item
         return [...prevItems, item]
       }
     })
 
-    // Sync with server if user is logged in
     if (user) {
       syncItemToServer(item)
     }
   }
 
-  const removeItem = (productId: string, size: string, variantId?: string) => {
+  const removeItem = async (productId: string, size: string, variantId?: string) => {
+    if (user) {
+      try {
+        await removeItemFromServer(productId, size, variantId)
+        await syncCartWithServer()
+        return
+      } catch (error) {
+        console.error('Failed to remove from server:', error)
+      }
+    }
+    
     setItems(prevItems => 
       prevItems.filter(item => !(item.productId === productId && 
                                  item.size === size &&
                                  item.variantId === variantId))
     )
-
-    // Sync with server if user is logged in
-    if (user) {
-      removeItemFromServer(productId, size, variantId)
-    }
   }
 
-  const updateQuantity = (productId: string, size: string, quantity: number, variantId?: string) => {
+  const updateQuantity = async (productId: string, size: string, quantity: number, variantId?: string) => {
     if (quantity <= 0) {
-      removeItem(productId, size, variantId)
+      await removeItem(productId, size, variantId)
       return
+    }
+
+    if (user) {
+      try {
+        await updateItemOnServer(productId, size, quantity, variantId)
+        await syncCartWithServer()
+        return
+      } catch (error) {
+        console.error('Failed to update on server:', error)
+      }
     }
 
     setItems(prevItems => 
@@ -131,21 +149,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           : item
       )
     )
-
-    // Sync with server if user is logged in
-    if (user) {
-      updateItemOnServer(productId, size, quantity, variantId)
-    }
   }
 
-  const clearCart = () => {
-    setItems([])
-    localStorage.removeItem('cart')
-
-    // Sync with server if user is logged in
+  const clearCart = async () => {
     if (user) {
-      clearCartOnServer()
+      try {
+        await clearCartOnServer()
+        await syncCartWithServer()
+        return
+      } catch (error) {
+        console.error('Failed to clear on server:', error)
+      }
     }
+    
+    setItems([])
   }
 
   const getTotal = (): number => {
@@ -179,62 +196,62 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }
 
   const removeItemFromServer = async (productId: string, size: string, variantId?: string) => {
-    try {
-      const token = localStorage.getItem('authToken')
-      if (!token) return
+    const token = localStorage.getItem('authToken')
+    if (!token) return
 
-      const params = new URLSearchParams({ productId, size })
-      if (variantId) {
-        params.append('variantId', variantId)
-      }
+    const params = new URLSearchParams({ productId, size })
+    if (variantId) {
+      params.append('variantId', variantId)
+    }
 
-      await fetch(`/api/cart?${params.toString()}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      })
-    } catch (error) {
-      console.error('Error removing item from server:', error)
+    const response = await fetch(`/api/cart?${params.toString()}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to remove item from server')
     }
   }
 
   const updateItemOnServer = async (productId: string, size: string, quantity: number, variantId?: string) => {
-    try {
-      const token = localStorage.getItem('authToken')
-      if (!token) return
+    const token = localStorage.getItem('authToken')
+    if (!token) return
 
-      const requestBody: any = { productId, size, quantity }
-      if (variantId) {
-        requestBody.variantId = variantId
-      }
+    const requestBody: any = { productId, size, quantity }
+    if (variantId) {
+      requestBody.variantId = variantId
+    }
 
-      await fetch('/api/cart', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      })
-    } catch (error) {
-      console.error('Error updating item on server:', error)
+    const response = await fetch('/api/cart', {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to update item on server')
     }
   }
 
   const clearCartOnServer = async () => {
-    try {
-      const token = localStorage.getItem('authToken')
-      if (!token) return
+    const token = localStorage.getItem('authToken')
+    if (!token) return
 
-      await fetch('/api/cart/clear', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      })
-    } catch (error) {
-      console.error('Error clearing cart on server:', error)
+    const response = await fetch('/api/cart/clear', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to clear cart on server')
     }
   }
 

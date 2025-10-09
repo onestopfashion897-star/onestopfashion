@@ -319,9 +319,9 @@ export interface AuthResponse {
 export interface CartContextType {
   items: CartItem[]
   addItem: (item: CartItem) => void
-  removeItem: (productId: string, size: string, variantId?: string) => void
-  updateQuantity: (productId: string, size: string, quantity: number, variantId?: string) => void
-  clearCart: () => void
+  removeItem: (productId: string, size: string, variantId?: string) => Promise<void>
+  updateQuantity: (productId: string, size: string, quantity: number, variantId?: string) => Promise<void>
+  clearCart: () => Promise<void>
   getTotal: () => number
   getItemCount: () => number
 }

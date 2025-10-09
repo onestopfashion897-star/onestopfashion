@@ -951,9 +951,12 @@ export class CartService {
     const cart = await this.getOrCreateCart(userId)
     
     const itemIndex = cart.items.findIndex(
-      item => item.productId.toString() === productId && 
-              item.size === size &&
-              item.variantId === variantId
+      item => {
+        const productMatch = item.productId.toString() === productId
+        const sizeMatch = item.size === size
+        const variantMatch = variantId ? item.variantId === variantId : !item.variantId
+        return productMatch && sizeMatch && variantMatch
+      }
     )
     
     if (itemIndex === -1) {
@@ -961,10 +964,8 @@ export class CartService {
     }
     
     if (quantity <= 0) {
-      // Remove item if quantity is 0 or less
       cart.items.splice(itemIndex, 1)
     } else {
-      // Update quantity
       cart.items[itemIndex].quantity = quantity
     }
     
@@ -988,9 +989,12 @@ export class CartService {
     const cart = await this.getOrCreateCart(userId)
     
     cart.items = cart.items.filter(
-      item => !(item.productId.toString() === productId && 
-                item.size === size &&
-                item.variantId === variantId)
+      item => {
+        const productMatch = item.productId.toString() === productId
+        const sizeMatch = item.size === size
+        const variantMatch = variantId ? item.variantId === variantId : !item.variantId
+        return !(productMatch && sizeMatch && variantMatch)
+      }
     )
     
     // Recalculate totals

@@ -70,21 +70,21 @@ export default function CartPage() {
     validateCouponOnCartChange()
   }, [subtotal, couponCode, couponDiscount, toast])
 
-  const handleQuantityChange = (productId: string, size: string, newQuantity: number, variantId?: string) => {
+  const handleQuantityChange = async (productId: string, size: string, newQuantity: number, variantId?: string) => {
     if (newQuantity < 1) return
-    updateQuantity(productId, size, newQuantity, variantId)
+    await updateQuantity(productId, size, newQuantity, variantId)
   }
 
-  const handleRemoveItem = (productId: string, size: string, variantId?: string) => {
-    removeItem(productId, size, variantId)
+  const handleRemoveItem = async (productId: string, size: string, variantId?: string) => {
+    await removeItem(productId, size, variantId)
     toast({
       title: "Item removed",
       description: "Item has been removed from your cart",
     })
   }
 
-  const handleMoveToWishlist = (item: any) => {
-    removeItem(item.productId, item.size, item.variantId)
+  const handleMoveToWishlist = async (item: any) => {
+    await removeItem(item.productId, item.size, item.variantId)
     addToWishlist(item.productId)
     toast({
       title: "Moved to wishlist",

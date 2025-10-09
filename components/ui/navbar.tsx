@@ -129,7 +129,7 @@ export function Navbar() {
             <div className="flex items-center space-x-4">
               {/* Cart */}
               <Link href="/cart">
-                <Button variant="ghost" size="icon" className="relative text-white hover:bg-white/10">
+                <Button variant="ghost" size="icon" className="relative text-white">
                   <ShoppingCart className="w-5 h-5" />
                   {getCartCount() > 0 && (
                     <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs bg-red-500 flex items-center justify-center">
@@ -143,7 +143,7 @@ export function Navbar() {
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="text-white hover:bg-white/10">
+                    <Button variant="ghost" className="text-white">
                       <User className="w-4 h-4 mr-2" />
                       {user.name}
                     </Button>
