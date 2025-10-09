@@ -35,28 +35,8 @@ export async function GET(request: NextRequest) {
         // Search products
         products = await ProductService.searchProducts(search, pagination)
       } else {
-        // Convert category slug to ObjectId if provided
         let categoryId = category
-        if (category) {
-          const categoryDoc = await CategoryService.findBySlug(category)
-          if (categoryDoc) {
-            categoryId = categoryDoc._id!.toString()
-          } else {
-            // If category slug doesn't exist, return empty results
-            return NextResponse.json({
-              success: true,
-              data: [],
-              pagination: {
-                page,
-                limit,
-                total: 0,
-                totalPages: 0
-              }
-            })
-          }
-        }
         
-        // Filter products with relationships
         const filters: ProductFilters = {
           category: categoryId,
           brand,

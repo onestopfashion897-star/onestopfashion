@@ -25,13 +25,14 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [brands, setBrands] = useState<Brand[]>([])
+  const [availableSizes, setAvailableSizes] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [showFilters, setShowFilters] = useState(false)
   
   // Filters
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all')
+  const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedBrand, setSelectedBrand] = useState('all')
   const [priceRange, setPriceRange] = useState([0, 10000])
   const [selectedSizes, setSelectedSizes] = useState<string[]>([])
@@ -46,14 +47,14 @@ export default function ProductsPage() {
     fetchData()
   }, [])
 
-  // Auto-refresh once when user first enters the page
   useEffect(() => {
-    const hasRefreshed = sessionStorage.getItem('productsPageRefreshed')
-    if (!hasRefreshed) {
-      sessionStorage.setItem('productsPageRefreshed', 'true')
-      window.location.reload()
+    const categoryFromUrl = searchParams.get('category')
+    if (categoryFromUrl && categoryFromUrl !== 'all') {
+      setSelectedCategory(categoryFromUrl)
     }
-  }, [])
+  }, [searchParams])
+
+
 
   useEffect(() => {
     fetchProducts()
@@ -61,17 +62,28 @@ export default function ProductsPage() {
 
   const fetchData = async () => {
     try {
-      // Fetch all active categories and brands
-      const [categoriesRes, brandsRes] = await Promise.all([
+      // Fetch all active categories, brands, and products to get available sizes
+      const [categoriesRes, brandsRes, productsRes] = await Promise.all([
         fetch('/api/categories?isActive=true'),
-        fetch('/api/brands?isActive=true')
+        fetch('/api/brands?isActive=true'),
+        fetch('/api/products?limit=1000')
       ])
       
       const categoriesData = await categoriesRes.json()
       const brandsData = await brandsRes.json()
+      const productsData = await productsRes.json()
       
       if (categoriesData.success) setCategories(categoriesData.data)
       if (brandsData.success) setBrands(brandsData.data)
+      
+      // Extract unique sizes from all products
+      if (productsData.success) {
+        const allSizes = new Set<string>()
+        productsData.data.forEach((product: Product) => {
+          product.sizes?.forEach((size: string) => allSizes.add(size))
+        })
+        setAvailableSizes(Array.from(allSizes).sort())
+      }
     } catch (error) {
       console.error('Error fetching data:', error)
     }
@@ -391,9 +403,21 @@ export default function ProductsPage() {
                       <Checkbox
                         id={category._id?.toString()}
                         checked={selectedCategory === category._id?.toString()}
-                        onCheckedChange={() => setSelectedCategory(category._id?.toString() || 'all')}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedCategory(category._id?.toString() || 'all')
+                          } else {
+                            setSelectedCategory('all')
+                          }
+                        }}
                       />
-                      <label htmlFor={category._id?.toString()} className="text-sm">{category.name}</label>
+                      <label htmlFor={category._id?.toString()} className="text-sm cursor-pointer" onClick={() => {
+                        if (selectedCategory === category._id?.toString()) {
+                          setSelectedCategory('all')
+                        } else {
+                          setSelectedCategory(category._id?.toString() || 'all')
+                        }
+                      }}>{category.name}</label>
                     </div>
                   ))}
                 </div>
@@ -418,9 +442,21 @@ export default function ProductsPage() {
                       <Checkbox
                         id={brand._id?.toString()}
                         checked={selectedBrand === brand._id?.toString()}
-                        onCheckedChange={() => setSelectedBrand(brand._id?.toString() || 'all')}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedBrand(brand._id?.toString() || 'all')
+                          } else {
+                            setSelectedBrand('all')
+                          }
+                        }}
                       />
-                      <label htmlFor={brand._id?.toString()} className="text-sm">{brand.name}</label>
+                      <label htmlFor={brand._id?.toString()} className="text-sm cursor-pointer" onClick={() => {
+                        if (selectedBrand === brand._id?.toString()) {
+                          setSelectedBrand('all')
+                        } else {
+                          setSelectedBrand(brand._id?.toString() || 'all')
+                        }
+                      }}>{brand.name}</label>
                     </div>
                   ))}
                 </div>
@@ -432,23 +468,43 @@ export default function ProductsPage() {
               <div className="mb-6 mt-6">
                 <h4 className="font-semibold mb-4 text-gray-900">Sizes</h4>
                 <div className="grid grid-cols-3 gap-2">
-                  {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
-                    <Button
-                      key={size}
-                      variant={selectedSizes.includes(size) ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => {
-                        setSelectedSizes(prev => 
-                          prev.includes(size) 
-                            ? prev.filter(s => s !== size)
-                            : [...prev, size]
-                        )
-                      }}
-                      className="rounded-lg"
-                    >
-                      {size}
-                    </Button>
-                  ))}
+                  {availableSizes.length > 0 ? (
+                    availableSizes.map((size) => (
+                      <Button
+                        key={size}
+                        variant={selectedSizes.includes(size) ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => {
+                          setSelectedSizes(prev => 
+                            prev.includes(size) 
+                              ? prev.filter(s => s !== size)
+                              : [...prev, size]
+                          )
+                        }}
+                        className="rounded-lg"
+                      >
+                        {size}
+                      </Button>
+                    ))
+                  ) : (
+                    ['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
+                      <Button
+                        key={size}
+                        variant={selectedSizes.includes(size) ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => {
+                          setSelectedSizes(prev => 
+                            prev.includes(size) 
+                              ? prev.filter(s => s !== size)
+                              : [...prev, size]
+                          )
+                        }}
+                        className="rounded-lg"
+                      >
+                        {size}
+                      </Button>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -506,9 +562,21 @@ export default function ProductsPage() {
                         <Checkbox
                           id={`mobile-${category._id?.toString()}`}
                           checked={selectedCategory === category._id?.toString()}
-                          onCheckedChange={() => setSelectedCategory(category._id?.toString() || 'all')}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedCategory(category._id?.toString() || 'all')
+                            } else {
+                              setSelectedCategory('all')
+                            }
+                          }}
                         />
-                        <label htmlFor={`mobile-${category._id?.toString()}`} className="text-sm">{category.name}</label>
+                        <label htmlFor={`mobile-${category._id?.toString()}`} className="text-sm cursor-pointer" onClick={() => {
+                          if (selectedCategory === category._id?.toString()) {
+                            setSelectedCategory('all')
+                          } else {
+                            setSelectedCategory(category._id?.toString() || 'all')
+                          }
+                        }}>{category.name}</label>
                       </div>
                     ))}
                   </div>
@@ -533,9 +601,21 @@ export default function ProductsPage() {
                         <Checkbox
                           id={`mobile-${brand._id?.toString()}`}
                           checked={selectedBrand === brand._id?.toString()}
-                          onCheckedChange={() => setSelectedBrand(brand._id?.toString() || 'all')}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedBrand(brand._id?.toString() || 'all')
+                            } else {
+                              setSelectedBrand('all')
+                            }
+                          }}
                         />
-                        <label htmlFor={`mobile-${brand._id?.toString()}`} className="text-sm">{brand.name}</label>
+                        <label htmlFor={`mobile-${brand._id?.toString()}`} className="text-sm cursor-pointer" onClick={() => {
+                          if (selectedBrand === brand._id?.toString()) {
+                            setSelectedBrand('all')
+                          } else {
+                            setSelectedBrand(brand._id?.toString() || 'all')
+                          }
+                        }}>{brand.name}</label>
                       </div>
                     ))}
                   </div>
@@ -547,7 +627,7 @@ export default function ProductsPage() {
                 <div>
                   <h4 className="font-medium mb-3">Sizes</h4>
                   <div className="grid grid-cols-3 gap-2">
-                    {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
+                    {(availableSizes.length > 0 ? availableSizes : ['XS', 'S', 'M', 'L', 'XL', 'XXL']).map((size) => (
                       <Button
                         key={size}
                         variant={selectedSizes.includes(size) ? 'default' : 'outline'}

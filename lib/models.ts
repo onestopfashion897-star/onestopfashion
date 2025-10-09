@@ -224,8 +224,6 @@ export class ProductService {
   ): Promise<Product[]> {
     const matchStage: any = { isActive: true }
     
-    if (filters.category) matchStage.categoryId = new ObjectId(filters.category)
-    if (filters.brand) matchStage.brandId = new ObjectId(filters.brand)
     if (filters.featured !== undefined) matchStage.featured = filters.featured
     if (filters.inStock) matchStage.stock = { $gt: 0 }
     
@@ -235,7 +233,6 @@ export class ProductService {
       if (filters.maxPrice) matchStage.price.$lte = filters.maxPrice
     }
 
-    // Add sizes filter
     if (filters.sizes && filters.sizes.length > 0) {
       matchStage.sizes = { $in: filters.sizes }
     }
@@ -243,9 +240,27 @@ export class ProductService {
     const pipeline: any[] = [
       { $match: matchStage },
       {
+        $addFields: {
+          categoryIdObj: {
+            $cond: {
+              if: { $eq: [{ $type: '$categoryId' }, 'string'] },
+              then: { $toObjectId: '$categoryId' },
+              else: '$categoryId'
+            }
+          },
+          brandIdObj: {
+            $cond: {
+              if: { $eq: [{ $type: '$brandId' }, 'string'] },
+              then: { $toObjectId: '$brandId' },
+              else: '$brandId'
+            }
+          }
+        }
+      },
+      {
         $lookup: {
           from: COLLECTIONS.CATEGORIES,
-          localField: 'categoryId',
+          localField: 'categoryIdObj',
           foreignField: '_id',
           as: 'category'
         }
@@ -253,7 +268,7 @@ export class ProductService {
       {
         $lookup: {
           from: COLLECTIONS.BRANDS,
-          localField: 'brandId',
+          localField: 'brandIdObj',
           foreignField: '_id',
           as: 'brand'
         }
@@ -265,6 +280,39 @@ export class ProductService {
         }
       }
     ]
+
+    // Add category filter after lookup - match either way
+    if (filters.category) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { 'category._id': new ObjectId(filters.category) },
+            { categoryId: filters.category },
+            { categoryId: new ObjectId(filters.category) }
+          ]
+        }
+      })
+    }
+
+    // Add brand filter after lookup - match either way
+    if (filters.brand) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { 'brand._id': new ObjectId(filters.brand) },
+            { brandId: filters.brand },
+            { brandId: new ObjectId(filters.brand) }
+          ]
+        }
+      })
+    }
+
+    pipeline.push({
+      $project: {
+        categoryIdObj: 0,
+        brandIdObj: 0
+      }
+    })
 
     if (pagination) {
       const { page, limit, sortBy, sortOrder } = pagination

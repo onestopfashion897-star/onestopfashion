@@ -97,18 +97,15 @@ export function Navbar() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8 ml-12">
-              <Link href="/products?category=men" className="text-white hover:text-gray-300 transition-colors">
-                Men
-              </Link>
-              <Link href="/products?category=women" className="text-white hover:text-gray-300 transition-colors">
-                Women
-              </Link>
-              <Link href="/products?category=kids" className="text-white hover:text-gray-300 transition-colors">
-                Kids
-              </Link>
-              <Link href="/products" className="text-white hover:text-gray-300 transition-colors">
-                Sale
-              </Link>
+              {categories.map((category) => (
+                <Link 
+                  key={category._id} 
+                  href={`/products?category=${category._id}`} 
+                  className="text-white hover:text-gray-300 transition-colors"
+                >
+                  {category.name}
+                </Link>
+              ))}
             </div>
 
             {/* Search Bar */}
@@ -149,9 +146,6 @@ export function Navbar() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem asChild>
-                      <Link href="/account">Profile</Link>
-                    </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href="/account/orders">Orders</Link>
                     </DropdownMenuItem>
@@ -212,18 +206,16 @@ export function Navbar() {
 
               {/* Mobile Navigation Links */}
               <div className="space-y-2">
-                <Link href="/products?category=men" className="block py-2 text-white hover:text-gray-300" onClick={() => setIsMenuOpen(false)}>
-                  Men
-                </Link>
-                <Link href="/products?category=women" className="block py-2 text-white hover:text-gray-300" onClick={() => setIsMenuOpen(false)}>
-                  Women
-                </Link>
-                <Link href="/products?category=kids" className="block py-2 text-white hover:text-gray-300" onClick={() => setIsMenuOpen(false)}>
-                  Kids
-                </Link>
-                <Link href="/products" className="block py-2 text-white hover:text-gray-300" onClick={() => setIsMenuOpen(false)}>
-                  Sale
-                </Link>
+                {categories.map((category) => (
+                  <Link 
+                    key={category._id} 
+                    href={`/products?category=${category._id}`} 
+                    className="block py-2 text-white hover:text-gray-300" 
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {category.name}
+                  </Link>
+                ))}
               </div>
 
               {/* Mobile Auth */}
@@ -255,11 +247,6 @@ export function Navbar() {
                       </span>
                     )}
                   </div>
-                  <Link href="/account">
-                    <Button variant="ghost" className="w-full justify-start" onClick={() => setIsMenuOpen(false)}>
-                      Profile
-                    </Button>
-                  </Link>
                   <Link href="/account/orders">
                     <Button variant="ghost" className="w-full justify-start" onClick={() => setIsMenuOpen(false)}>
                       Orders

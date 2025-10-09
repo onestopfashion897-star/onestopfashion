@@ -52,21 +52,21 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Back to Home */}
-        <Link href="/" className="inline-flex items-center text-sm text-gray-600 hover:text-purple-600 mb-6 transition-colors">
+        <Link href="/" className="inline-flex items-center text-sm text-gray-400 hover:text-white mb-6 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
         </Link>
 
-        <Card className="shadow-xl border-0">
+        <Card className="shadow-xl border border-gray-800 bg-black">
           <CardHeader className="text-center pb-6">
             <div className="w-24 h-24 flex items-center justify-center mx-auto mb-4">
               <img src="/logo/happy-logo.png" alt="One Stop Fashion Logo" className="w-24 h-24 object-contain" />
             </div>
-            <CardTitle className="text-2xl font-bold text-gray-900">Welcome Back</CardTitle>
-            <CardDescription className="text-gray-600">
+            <CardTitle className="text-2xl font-bold text-white">Welcome Back</CardTitle>
+            <CardDescription className="text-gray-400">
               Sign in to your One Stop Fashion account
             </CardDescription>
           </CardHeader>
@@ -79,43 +79,43 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="email" className="text-sm font-medium text-gray-300">
                   Email Address
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
                   <Input
                     id="email"
                     type="email"
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 pr-4 h-12 border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                    className="pl-10 pr-4 h-12 bg-gray-900 border-gray-800 text-white placeholder:text-gray-500 focus:border-white focus:ring-white"
                     required
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="password" className="text-sm font-medium text-gray-300">
                   Password
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-12 h-12 border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                    className="pl-10 pr-12 h-12 bg-gray-900 border-gray-800 text-white placeholder:text-gray-500 focus:border-white focus:ring-white"
                     required
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-10 w-10 hover:bg-gray-100"
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-10 w-10 text-gray-400 hover:text-white hover:bg-gray-800"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -126,7 +126,7 @@ export default function LoginPage() {
               <div className="flex justify-end">
                 <Link 
                   href="/forgot-password" 
-                  className="text-sm text-purple-600 hover:text-purple-700 font-medium"
+                  className="text-sm text-gray-400 hover:text-white font-medium"
                 >
                   Forgot your password?
                 </Link>
@@ -134,7 +134,7 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium"
+                className="w-full h-12 bg-white hover:bg-gray-200 text-black font-medium"
                 disabled={loading}
               >
                 {loading ? 'Signing in...' : 'Sign In'}
@@ -142,20 +142,20 @@ export default function LoginPage() {
             </form>
 
             <div className="text-center space-y-4">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-gray-400">
                 Don't have an account?{' '}
-                <Link href="/register" className="text-purple-600 hover:text-purple-700 font-medium">
+                <Link href="/register" className="text-white hover:text-gray-300 font-medium">
                   Sign up here
                 </Link>
               </div>
               
               <div className="text-sm text-gray-500">
                 By signing in, you agree to our{' '}
-                <Link href="/terms" className="text-purple-600 hover:text-purple-700">
+                <Link href="/terms" className="text-gray-400 hover:text-white">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link href="/privacy" className="text-purple-600 hover:text-purple-700">
+                <Link href="/privacy" className="text-gray-400 hover:text-white">
                   Privacy Policy
                 </Link>
               </div>

@@ -133,7 +133,7 @@ export default function ProductsPage() {
   const fetchProducts = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/products')
+      const response = await fetch('/api/products?limit=1000')
       const data = await response.json()
       
       console.log('Products API response:', data)

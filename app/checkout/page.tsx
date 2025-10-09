@@ -65,24 +65,26 @@ export default function CheckoutPage() {
   const shipping = subtotal > 999 ? 0 : 99
   const total = subtotal + shipping - couponDiscount
 
+  const [showPaymentError, setShowPaymentError] = useState(false)
+
   const paymentMethods: PaymentMethod[] = [
     {
       id: 'debit-card',
       name: 'Debit Card',
       icon: '💳',
-      description: 'Not available for your location'
+      description: 'Pay securely with your debit card'
     },
     {
       id: 'credit-card',
       name: 'Credit Card',
       icon: '💳',
-      description: 'Not available for your location'
+      description: 'Pay securely with your credit card'
     },
     {
       id: 'upi',
       name: 'UPI',
       icon: '📱',
-      description: 'Not available for your location'
+      description: 'Pay using UPI apps'
     },
     {
       id: 'cod',
@@ -510,43 +512,31 @@ export default function CheckoutPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
-                    <div className="flex items-start gap-3">
-                      <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
-                      <div>
-                        <h4 className="font-semibold text-yellow-800">Payment Notice</h4>
-                        <p className="text-sm text-yellow-700">Only Cash on Delivery is available for your location at this time.</p>
-                      </div>
-                    </div>
-                  </div>
                   <div className="grid gap-4">
                     {paymentMethods.map((method) => {
-                      const isDisabled = method.id !== 'cod'
                       return (
                         <div
                           key={method.id}
-                          className={`p-4 border-2 rounded-2xl transition-all ${
-                            isDisabled
-                              ? 'border-gray-200 bg-gray-50 opacity-60 cursor-not-allowed'
-                              : selectedPaymentMethod === method.id
-                              ? 'border-blue-500 bg-blue-50 cursor-pointer'
-                              : 'border-gray-200 hover:border-blue-300 cursor-pointer'
+                          className={`p-4 border-2 rounded-2xl transition-all cursor-pointer ${
+                            selectedPaymentMethod === method.id
+                              ? 'border-blue-500 bg-blue-50'
+                              : 'border-gray-200 hover:border-blue-300'
                           }`}
-                          onClick={() => !isDisabled && setSelectedPaymentMethod(method.id)}
+                          onClick={() => setSelectedPaymentMethod(method.id)}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4">
                               <span className="text-2xl">{method.icon}</span>
                               <div>
-                                <h3 className={`font-semibold ${isDisabled ? 'text-gray-500' : 'text-gray-900'}`}>
+                                <h3 className="font-semibold text-gray-900">
                                   {method.name}
                                 </h3>
-                                <p className={`text-sm ${isDisabled ? 'text-gray-400' : 'text-gray-600'}`}>
+                                <p className="text-sm text-gray-600">
                                   {method.description}
                                 </p>
                               </div>
                             </div>
-                            {selectedPaymentMethod === method.id && !isDisabled && (
+                            {selectedPaymentMethod === method.id && (
                               <CheckCircle className="w-6 h-6 text-blue-600" />
                             )}
                           </div>
@@ -554,6 +544,71 @@ export default function CheckoutPage() {
                       )
                     })}
                   </div>
+
+                  {/* Payment Details Forms */}
+                  {selectedPaymentMethod === 'debit-card' && (
+                    <div className="p-6 bg-gray-50 rounded-2xl border-2 border-gray-200 space-y-4">
+                      <h4 className="font-semibold text-gray-900">Enter Debit Card Details</h4>
+                      <div className="space-y-4">
+                        <Input placeholder="Card Number" className="rounded-xl" />
+                        <div className="grid grid-cols-2 gap-4">
+                          <Input placeholder="MM/YY" className="rounded-xl" />
+                          <Input placeholder="CVV" type="password" className="rounded-xl" />
+                        </div>
+                        <Input placeholder="Cardholder Name" className="rounded-xl" />
+                      </div>
+                      <div className="p-4 bg-red-50 border border-red-200 rounded-xl mt-4">
+                        <div className="flex items-start gap-3">
+                          <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+                          <div>
+                            <h4 className="font-semibold text-red-800">Payment Not Available</h4>
+                            <p className="text-sm text-red-700">Only Cash on Delivery is available for your location at this time.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedPaymentMethod === 'credit-card' && (
+                    <div className="p-6 bg-gray-50 rounded-2xl border-2 border-gray-200 space-y-4">
+                      <h4 className="font-semibold text-gray-900">Enter Credit Card Details</h4>
+                      <div className="space-y-4">
+                        <Input placeholder="Card Number" className="rounded-xl" />
+                        <div className="grid grid-cols-2 gap-4">
+                          <Input placeholder="MM/YY" className="rounded-xl" />
+                          <Input placeholder="CVV" type="password" className="rounded-xl" />
+                        </div>
+                        <Input placeholder="Cardholder Name" className="rounded-xl" />
+                      </div>
+                      <div className="p-4 bg-red-50 border border-red-200 rounded-xl mt-4">
+                        <div className="flex items-start gap-3">
+                          <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+                          <div>
+                            <h4 className="font-semibold text-red-800">Payment Not Available</h4>
+                            <p className="text-sm text-red-700">Only Cash on Delivery is available for your location at this time.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedPaymentMethod === 'upi' && (
+                    <div className="p-6 bg-gray-50 rounded-2xl border-2 border-gray-200 space-y-4">
+                      <h4 className="font-semibold text-gray-900">Enter UPI Details</h4>
+                      <div className="space-y-4">
+                        <Input placeholder="UPI ID (e.g., yourname@paytm)" className="rounded-xl" />
+                      </div>
+                      <div className="p-4 bg-red-50 border border-red-200 rounded-xl mt-4">
+                        <div className="flex items-start gap-3">
+                          <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+                          <div>
+                            <h4 className="font-semibold text-red-800">Payment Not Available</h4>
+                            <p className="text-sm text-red-700">Only Cash on Delivery is available for your location at this time.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Security Notice */}
                   <div className="p-4 bg-green-50 rounded-2xl border border-green-200">
@@ -686,11 +741,11 @@ export default function CheckoutPage() {
 
                 {currentStep === 2 && (
                   <Button
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 text-lg font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 text-lg font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handlePaymentSubmit}
-                    disabled={loading}
+                    disabled={loading || selectedPaymentMethod !== 'cod'}
                   >
-                    {loading ? 'Processing...' : `Pay ₹${total.toLocaleString()}`}
+                    {loading ? 'Processing...' : selectedPaymentMethod !== 'cod' ? 'Only COD Available' : `Pay ₹${total.toLocaleString()}`}
                   </Button>
                 )}
               </CardContent>
