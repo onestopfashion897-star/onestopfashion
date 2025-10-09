@@ -1,7 +1,7 @@
 import { MongoClient } from 'mongodb'
 
 // Default MongoDB URI for development
-const DEFAULT_MONGODB_URI = 'mongodb://kakkadpriyansh:Priyansh%401712@213.210.36.173:27017/?authSource=admin'
+const DEFAULT_MONGODB_URI = 'mongodb://kakkadpriyansh:Priyansh@0.0.0.0:27017/?authSource=admin'
 
 const uri = process.env.MONGODB_URI || DEFAULT_MONGODB_URI
 const options = {
