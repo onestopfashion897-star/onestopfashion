@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { AuthService } from '@/lib/auth'
 import { LoginCredentials, User } from '@/lib/types'
 
 export async function POST(request: NextRequest) {
@@ -14,6 +13,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
+
+    // Dynamic import to avoid build-time issues
+    const { AuthService } = await import('@/lib/auth')
 
     // First try to authenticate as a regular user
     let result = await AuthService.authenticateUser(email.toLowerCase(), password)

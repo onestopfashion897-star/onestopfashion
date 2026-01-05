@@ -1,6 +1,17 @@
 import { MongoClient } from 'mongodb'
 
-const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/stylehub'
+// Clean the URI to remove any HTML entities
+function cleanMongoUri(uri: string): string {
+  return uri
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .trim()
+}
+
+const rawUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/stylehub'
+const uri = cleanMongoUri(rawUri)
 
 // Check if it's an Atlas connection
 const isAtlas = uri.includes('mongodb+srv://')
@@ -31,6 +42,7 @@ if (process.env.NODE_ENV === 'development') {
     client = new MongoClient(uri, options)
     globalWithMongo._mongoClientPromise = client.connect().catch(err => {
       console.error('MongoDB connection error:', err)
+      console.error('URI being used:', uri.replace(/\/\/[^@]+@/, '//***:***@')) // Hide credentials
       throw err
     })
   }
@@ -39,6 +51,7 @@ if (process.env.NODE_ENV === 'development') {
   client = new MongoClient(uri, options)
   clientPromise = client.connect().catch(err => {
     console.error('MongoDB connection error:', err)
+    console.error('URI being used:', uri.replace(/\/\/[^@]+@/, '//***:***@')) // Hide credentials
     throw err
   })
 }
