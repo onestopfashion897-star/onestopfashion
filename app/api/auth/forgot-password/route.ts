@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { UserService } from '@/lib/models'
-import { emailService } from '@/lib/email'
 import bcrypt from 'bcryptjs'
 
 // Generate a random password
@@ -44,6 +42,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Dynamic imports to avoid build-time issues
+    const { UserService } = await import('@/lib/models')
+    const { emailService } = await import('@/lib/email')
+
     // Check if user exists
     const user = await UserService.findByEmail(email.toLowerCase().trim())
     if (!user) {
@@ -52,8 +54,6 @@ export async function POST(request: NextRequest) {
         { status: 404 }
       )
     }
-
-    // User exists and can reset password (no isActive check needed for User type)
 
     // Generate new password
     const newPassword = generateRandomPassword(12)
@@ -90,8 +90,6 @@ export async function POST(request: NextRequest) {
     })
 
     if (!emailSent) {
-      // If email fails, we should still consider it a partial success
-      // since the password was updated
       return NextResponse.json(
         { 
           success: true, 
