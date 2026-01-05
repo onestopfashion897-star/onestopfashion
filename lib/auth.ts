@@ -58,6 +58,11 @@ export class AuthService {
   // Admin authentication - checks both User and Admin collections
   static async authenticateAdmin(email: string, password: string): Promise<{ admin: any; token: string } | null> {
     try {
+      // During build time, skip database operations
+      if (process.env.NODE_ENV === 'production' && !process.env.VERCEL_ENV) {
+        return null
+      }
+
       // First try Admin collection
       const { AdminService } = await import('./models')
       const admin = await AdminService.findByEmail(email)

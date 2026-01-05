@@ -48,6 +48,11 @@ export class DatabaseService {
       return db.collection(collectionName)
     } catch (error) {
       console.error('MongoDB connection error:', error)
+      // During build time, we might not have access to the database
+      // Return a mock collection that throws on actual operations
+      if (process.env.NODE_ENV === 'production' && !process.env.VERCEL_ENV) {
+        throw new Error('Database connection failed during build. This is expected during static generation.')
+      }
       throw new Error('Database connection failed. Please check your MongoDB configuration.')
     }
   }
