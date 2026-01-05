@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { AuthService } from '@/lib/auth'
 import { LoginCredentials } from '@/lib/types'
 
 export async function POST(request: NextRequest) {
@@ -15,6 +14,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Dynamic import to avoid build-time issues
+    const { AuthService } = await import('@/lib/auth')
+    
     // Authenticate admin
     const result = await AuthService.authenticateAdmin(email.toLowerCase(), password)
     
