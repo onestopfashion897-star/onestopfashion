@@ -28,7 +28,7 @@ export function TopHeader() {
           <div className="flex items-center space-x-4">
             <div className="hidden sm:flex items-center space-x-2">
               <Phone className="w-4 h-4" />
-              <span>Support: +91 98765 43210</span>
+              <span>Support:  +9196625 62675</span>
             </div>
             <button
               onClick={() => setIsVisible(false)}

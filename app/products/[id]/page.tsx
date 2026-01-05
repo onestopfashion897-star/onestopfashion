@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -64,13 +64,16 @@ export default function ProductDetailsPage() {
     totalReviews: number
     ratingDistribution: { [key: number]: number }
   } | null>(null)
+  const hasFetchedRef = useRef(false)
 
+  // Fetch product, reviews and stats once per mount (avoid React Strict Mode double fetch)
   useEffect(() => {
-    if (params.id) {
-      fetchProduct()
-      fetchReviews()
-      fetchReviewStats()
-    }
+    if (!params.id) return
+    if (hasFetchedRef.current) return
+    hasFetchedRef.current = true
+    fetchProduct()
+    fetchReviews()
+    fetchReviewStats()
   }, [params.id])
 
   const fetchProduct = async () => {
@@ -141,10 +144,13 @@ export default function ProductDetailsPage() {
 
   const fetchRelatedProducts = async (categoryId: string) => {
     try {
-      const response = await fetch(`/api/products?category=${categoryId}&limit=4`)
+      const response = await fetch(`/api/products?category=${categoryId}&limit=4`, {
+        cache: 'force-cache',
+        next: { revalidate: 300 }
+      })
       const data = await response.json()
       if (data.success) {
-        setRelatedProducts(data.data.filter((p: Product) => p._id?.toString() !== params.id))
+        setRelatedProducts(data.data.filter((p: Product) => p._id?.toString() !== params.id).slice(0, 4))
       }
     } catch (error) {
       console.error('Error fetching related products:', error)
@@ -803,6 +809,8 @@ export default function ProductDetailsPage() {
                   <div className="mb-8">
                     <h3 className="text-3xl font-bold text-gray-900">Customer Reviews</h3>
                   </div>
+                  
+                  {/* Reviews load via useEffect; avoid render-time side effects */}
                   
                   {reviewsLoading ? (
                     <div className="text-center py-16">

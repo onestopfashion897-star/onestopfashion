@@ -21,7 +21,7 @@ interface PreloaderWrapperProps {
 const PreloaderWrapper: React.FC<PreloaderWrapperProps> = ({ 
   children, 
   showPreloader = false, 
-  minLoadingTime = 500 
+  minLoadingTime = 300 
 }) => {
   const [isLoading, setIsLoading] = useState(showPreloader);
   const [startTime] = useState(Date.now());

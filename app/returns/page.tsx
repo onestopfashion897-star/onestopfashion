@@ -40,7 +40,8 @@ export default function ReturnsPage() {
               <div className="flex-shrink-0 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold">1</div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-1">Contact Us</h3>
-                <p className="text-gray-600 text-sm">Email support@onestopfashion.com with your order number</p>
+                <p className="text-gray-600 text-sm">Email socodebusinesspvtltd@gmail.com
+ with your order number</p>
               </div>
             </div>
             <div className="flex gap-4">
@@ -86,9 +87,13 @@ export default function ReturnsPage() {
           <h3 className="text-xl font-semibold mb-2">Need Help?</h3>
           <p className="text-gray-300 mb-4">Our support team is here to assist you</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="mailto:support@onestopfashion.com" className="text-white hover:text-gray-300">support@onestopfashion.com</a>
+            <a href="mailto:fentrainfrapvtltd@gmail.com
+" className="text-white hover:text-gray-300">socodebusinesspvtltd@gmail.com
+</a>
             <span className="hidden sm:inline text-gray-500">|</span>
-            <a href="tel:+919876543210" className="text-white hover:text-gray-300">+91 98765 43210</a>
+            <a href="tel:+919173803878
+
+" className="text-white hover:text-gray-300">+91 96625 62675</a>
           </div>
         </div>
       </div>

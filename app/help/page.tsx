@@ -149,7 +149,9 @@ export default function HelpCenterPage() {
                 <p className="text-purple-100 mb-6">Our support team is ready to assist you</p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a 
-                    href="https://wa.me/919876543210 " 
+                    href="https://wa.me/919173803878
+
+ " 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center space-x-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold"
@@ -159,7 +161,9 @@ export default function HelpCenterPage() {
                     <ExternalLink className="w-4 h-4" />
                   </a>
                   <a 
-                    href="tel:+919876543210 "
+                    href="tel:+919173803878
+
+ "
                     className="inline-flex items-center justify-center space-x-2 bg-white text-purple-600 px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
                   >
                     <Phone className="w-5 h-5" />
@@ -227,7 +231,9 @@ export default function HelpCenterPage() {
                   </a>
                 </Button>
                 <Button variant="outline" asChild>
-                  <a href="https://wa.me/919876543210 " target="_blank" rel="noopener noreferrer">
+                  <a href="https://wa.me/919173803878
+
+ " target="_blank" rel="noopener noreferrer">
                     <MessageSquare className="w-4 h-4 mr-2" />
                     WhatsApp Chat
                     <ExternalLink className="w-4 h-4 ml-2" />

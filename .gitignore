@@ -25,3 +25,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+happyfeet-main.zip
+# Ignore ZIP archives and other large binaries
+*.zip
+*.rar
+*.7z
+*.tar
+*.tar.gz

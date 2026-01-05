@@ -6,62 +6,26 @@ import { withAdminAuth } from '@/lib/auth'
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '1000')
-    const search = searchParams.get('search') || ''
     const isActive = searchParams.get('isActive')
-    const withProducts = searchParams.get('withProducts')
+    const limit = parseInt(searchParams.get('limit') || '100')
 
     let filter: any = {}
-    
-    // Add isActive filter if specified
     if (isActive === 'true') {
       filter.isActive = true
-    } else if (isActive === 'false') {
-      filter.isActive = false
     }
 
-    let categories
-    if (search) {
-      const searchRegex = { $regex: search, $options: 'i' }
-      categories = await DatabaseService.find('categories', {
-        ...filter,
-        $or: [
-          { name: searchRegex },
-          { description: searchRegex }
-        ]
-      }, { page, limit })
-    } else {
-      categories = await DatabaseService.find('categories', filter, { page, limit })
-    }
-
-    // Get product count for each category
-    const categoriesWithProductCount = await Promise.all(
-      categories.map(async (category: any) => {
-        const productCount = await DatabaseService.count('products', { categoryId: category._id })
-        return {
-          ...category,
-          productCount
-        }
-      })
-    )
-
-    // Filter categories with products if requested
-    let finalCategories = categoriesWithProductCount
-    if (withProducts === 'true') {
-      finalCategories = categoriesWithProductCount.filter((category: any) => category.productCount > 0)
-    }
+    const categories = await DatabaseService.find('categories', filter, { page: 1, limit })
 
     return NextResponse.json({
       success: true,
-      data: finalCategories,
+      data: categories || [],
     })
   } catch (error) {
     console.error('Error fetching categories:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch categories' },
-      { status: 500 }
-    )
+    return NextResponse.json({
+      success: true,
+      data: [],
+    })
   }
 }
 

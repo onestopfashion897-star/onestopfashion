@@ -118,7 +118,8 @@ export const GET = withAuth(async (
           <h1>INVOICE</h1>
           <div class="company-info">
             <h2>One Stop Fashion</h2>
-            <p>Phone: +91 98765 43210 | Email: support@onestopfashion.com</p>
+            <p>Phone:  +9196625 62675 | Email: fentrainfrapvtltd@gmail.com
+</p>
           </div>
         </div>
         
@@ -187,7 +188,8 @@ export const GET = withAuth(async (
         
         <div class="footer">
           <p><strong>Thank you for shopping with One Stop Fashion!</strong></p>
-          <p style="margin-top: 10px;">For any queries, contact us at support@onestopfashion.com or +91 98765 43210</p>
+          <p style="margin-top: 10px;">For any queries, contact us at fentrainfrapvtltd@gmail.com
+ or  +9196625 62675</p>
         </div>
       </div>
     </body>

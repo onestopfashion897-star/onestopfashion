@@ -12,14 +12,14 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: banners,
+      data: banners || [],
     })
   } catch (error) {
     console.error('Error fetching horizontal banners:', error)
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch horizontal banners' },
-      { status: 500 }
-    )
+    return NextResponse.json({
+      success: true,
+      data: [],
+    })
   }
 }
 

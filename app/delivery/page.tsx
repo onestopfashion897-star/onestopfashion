@@ -83,9 +83,13 @@ export default function DeliveryPage() {
                 <h2 className="text-xl font-semibold mb-3">Contact Us</h2>
                 <p className="text-gray-300 mb-4">For any delivery-related queries, please contact our customer support</p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <a href="mailto:support@onestopfashion.com" className="text-white hover:text-gray-300">support@onestopfashion.com</a>
+                  <a href="mailto:fentrainfrapvtltd@gmail.com
+" className="text-white hover:text-gray-300">socodebusinesspvtltd@gmail.com
+</a>
                   <span className="hidden sm:inline text-gray-500">|</span>
-                  <a href="tel:+919876543210" className="text-white hover:text-gray-300">+91 98765 43210</a>
+                  <a href="tel:+919173803878
+
+" className="text-white hover:text-gray-300">+91 96625 62675</a>
                 </div>
               </div>
             </div>

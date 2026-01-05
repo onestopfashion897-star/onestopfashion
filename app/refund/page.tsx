@@ -82,7 +82,8 @@ export default function RefundPage() {
             <div className="grid md:grid-cols-2 gap-4 ml-14">
               <div className="flex gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-sm font-bold">1</span>
-                <p className="text-gray-600 text-sm">Contact us at support@onestopfashion.com with your order number</p>
+                <p className="text-gray-600 text-sm">Contact us at fentrainfrapvtltd@gmail.com
+ with your order number</p>
               </div>
               <div className="flex gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-sm font-bold">2</span>
@@ -130,7 +131,8 @@ export default function RefundPage() {
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-yellow-900 mb-3">Damaged or Defective Items</h2>
-                <p className="text-yellow-800">If you receive a damaged or defective item, contact us immediately at support@onestopfashion.com with photos. We will arrange a free return and full refund or replacement.</p>
+                <p className="text-yellow-800">If you receive a damaged or defective item, contact us immediately at socodebusinesspvtltd@gmail.com
+ with photos. We will arrange a free return and full refund or replacement.</p>
               </div>
             </div>
           </div>
@@ -140,9 +142,13 @@ export default function RefundPage() {
           <h3 className="text-xl font-semibold mb-2">Need Help?</h3>
           <p className="text-gray-300 mb-4">Contact us for return and refund queries</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="mailto:support@onestopfashion.com" className="text-white hover:text-gray-300">support@onestopfashion.com</a>
+            <a href="mailto:fentrainfrapvtltd@gmail.com
+" className="text-white hover:text-gray-300">socodebusinesspvtltd@gmail.com
+</a>
             <span className="hidden sm:inline text-gray-500">|</span>
-            <a href="tel:+919876543210" className="text-white hover:text-gray-300">+91 98765 43210</a>
+            <a href="tel:+919173803878
+
+" className="text-white hover:text-gray-300">+91 96625 62675</a>
           </div>
         </div>
       </div>

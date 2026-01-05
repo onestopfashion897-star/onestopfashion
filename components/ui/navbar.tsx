@@ -97,6 +97,12 @@ export function Navbar() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8 ml-12">
+              <Link 
+                href="/products" 
+                className="text-white hover:text-gray-300 transition-colors font-medium"
+              >
+                Shop
+              </Link>
               {categories.map((category) => (
                 <Link 
                   key={category._id} 
@@ -206,6 +212,13 @@ export function Navbar() {
 
               {/* Mobile Navigation Links */}
               <div className="space-y-2">
+                <Link 
+                  href="/products" 
+                  className="block py-2 text-white hover:text-gray-300 font-medium" 
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Shop
+                </Link>
                 {categories.map((category) => (
                   <Link 
                     key={category._id} 

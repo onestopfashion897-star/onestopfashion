@@ -112,7 +112,7 @@ export const mockOrders: Order[] = [
     shippingAddress: {
       id: "1",
       name: "John Doe",
-      phone: "+91 9876543210 ",
+      phone: "+919173803878 ",
       pincode: "110001",
       address: "123 Main Street",
       city: "Delhi",
@@ -129,14 +129,14 @@ export const mockUsers: User[] = [
     _id: new ObjectId(),
     name: "John Doe",
     email: "john@example.com",
-    phone: "+91 9876543210 ",
+    phone: "+919173803878 ",
     password: "hashedpassword",
     role: "user" as const,
     addresses: [
       {
         id: "1",
         name: "John Doe",
-        phone: "+91 9876543210 ",
+        phone: "+919173803878 ",
         pincode: "110001",
         address: "123 Main Street",
         city: "Delhi",

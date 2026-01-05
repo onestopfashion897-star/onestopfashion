@@ -1,14 +1,9 @@
-"use client"
-
-import { useState, useEffect } from 'react'
 import { Navbar } from '@/components/ui/navbar'
 import { TopHeader } from '@/components/ui/top-header'
 import { Footer } from '@/components/ui/footer'
 import { ProductCard } from '@/components/ui/product-card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { ModernHero } from '@/components/home/ModernHero'
-import PreloaderWrapper from '@/components/ui/preloader-wrapper'
+import HeroWrapper from '@/components/home/HeroWrapper'
 
 import { 
   Truck, 
@@ -17,52 +12,75 @@ import {
   Zap
 } from 'lucide-react'
 import Link from 'next/link'
-import { useCart } from '@/contexts/CartContext'
-import { useWishlist } from '@/contexts/WishlistContext'
-import { useAuth } from '@/contexts/AuthContext'
 import { Product } from '@/lib/types'
+import { ProductService } from '@/lib/models'
 
-export default function HomePage() {
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
-  const [trendingProducts, setTrendingProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
+export const revalidate = 300
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch featured products
-        const featuredResponse = await fetch('/api/products?featured=true&limit=8')
-        if (featuredResponse.ok) {
-          const featuredData = await featuredResponse.json()
-          setFeaturedProducts(featuredData.data || [])
-        }
+// Convert Mongo ObjectId/Date fields to plain serializable values
+function toPlainId(id: any) {
+  try {
+    if (!id) return id
+    if (typeof id === 'string') return id
+    if (typeof id === 'object' && 'toString' in id) return id.toString()
+    return String(id)
+  } catch {
+    return id
+  }
+}
 
-        // Fetch trending products (latest products)
-        const trendingResponse = await fetch('/api/products?limit=8&sortBy=createdAt&sortOrder=desc')
-        if (trendingResponse.ok) {
-          const trendingData = await trendingResponse.json()
-          setTrendingProducts(trendingData.data || [])
-        }
+function toPlainDate(date: any) {
+  try {
+    if (!date) return date
+    if (typeof date === 'string') return date
+    if (date instanceof Date) return date.toISOString()
+    const d = new Date(date)
+    return isNaN(d.getTime()) ? date : d.toISOString()
+  } catch {
+    return date
+  }
+}
 
+function toPlainProduct(p: any): Product {
+  return {
+    ...p,
+    _id: toPlainId(p._id) as any,
+    categoryId: toPlainId(p.categoryId) as any,
+    brandId: toPlainId(p.brandId) as any,
+    createdAt: toPlainDate(p.createdAt) as any,
+    updatedAt: toPlainDate(p.updatedAt) as any,
+    brand: p.brand
+      ? { ...p.brand, _id: toPlainId(p.brand._id) as any }
+      : p.brand,
+    category: p.category
+      ? { ...p.category, _id: toPlainId(p.category._id) as any }
+      : p.category,
+  }
+}
 
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
+async function getHomeProducts() {
+  try {
+    const [featuredDocs, trendingDocs] = await Promise.all([
+      ProductService.getFeaturedProducts(),
+      ProductService.findProducts({}, { page: 1, limit: 8, sortBy: 'createdAt', sortOrder: 'desc' })
+    ])
+    const featured = featuredDocs.map(toPlainProduct)
+    const trending = trendingDocs.map(toPlainProduct)
+    return { featured, trending }
+  } catch {
+    return { featured: [], trending: [] }
+  }
+}
 
-    fetchData()
-  }, [])
-
+export default async function HomePage() {
+  const { featured: featuredProducts, trending: trendingProducts } = await getHomeProducts()
 
   return (
-    <PreloaderWrapper showPreloader={loading}>
-      <div className="min-h-screen bg-white">
-        <TopHeader />
-        <Navbar />
-      {/* Modern Hero Section */}
-         <ModernHero />
+    <div className="min-h-screen bg-white">
+      <TopHeader />
+      <Navbar />
+      {/* Modern Hero Section (client-only, deferred via wrapper) */}
+      <HeroWrapper />
 
       {/* Featured Products */}
       <section className="pt-16 pb-20 bg-white">
@@ -78,13 +96,14 @@ export default function HomePage() {
           
           {featuredProducts.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
-               {featuredProducts.map((product) => (
-                 <ProductCard
-                   key={product._id?.toString()}
-                   product={product}
-                 />
-               ))}
-             </div>
+              {featuredProducts.map((product) => (
+                <ProductCard
+                  key={product._id?.toString()}
+                  product={product}
+                  showReviewStats={false}
+                />
+              ))}
+            </div>
           ) : (
             <div className="text-center py-12">
               <p className="text-gray-500">No featured products available at the moment.</p>
@@ -93,7 +112,7 @@ export default function HomePage() {
           
           <div className="text-center">
             <Button asChild className="bg-black hover:bg-gray-800 text-white px-8 rounded-full">
-              <Link href="/products" className="inline-flex items-center gap-2">
+              <Link href="/products" prefetch={false} className="inline-flex items-center gap-2">
                 View All
                 <ArrowRight className="w-4 h-4" />
               </Link>
@@ -120,6 +139,7 @@ export default function HomePage() {
                 <ProductCard
                   key={product._id?.toString()}
                   product={product}
+                  showReviewStats={false}
                 />
               ))}
             </div>
@@ -131,7 +151,7 @@ export default function HomePage() {
           
           <div className="text-center">
             <Button asChild className="bg-black hover:bg-gray-800 text-white px-8 rounded-full">
-              <Link href="/products" className="inline-flex items-center gap-2">
+              <Link href="/products" prefetch={false} className="inline-flex items-center gap-2">
                 View All
                 <ArrowRight className="w-4 h-4" />
               </Link>
@@ -210,7 +230,6 @@ export default function HomePage() {
 
       {/* Footer */}
       <Footer />
-      </div>
-    </PreloaderWrapper>
+    </div>
   )
 }

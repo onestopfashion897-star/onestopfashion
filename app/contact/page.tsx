@@ -91,7 +91,7 @@ export default function ContactPage() {
                   <Phone className="w-5 h-5 text-purple-600 mt-1" />
                   <div>
                     <h3 className="font-semibold text-gray-900">Phone Support</h3>
-                    <p className="text-gray-600">+91 9876543210 </p>
+                    <p className="text-gray-600">+919662562675 </p>
                     <p className="text-sm text-gray-500">Mon-Sat: 9:00 AM - 8:00 PM</p>
                   </div>
                 </div>
@@ -100,8 +100,18 @@ export default function ContactPage() {
                   <Mail className="w-5 h-5 text-purple-600 mt-1" />
                   <div>
                     <h3 className="font-semibold text-gray-900">Email Support</h3>
-                    <p className="text-gray-600">support@onestopfashion.com</p>
+                    <p className="text-gray-600">socodebusinesspvtltd@gmail.com
+</p>
                     <p className="text-sm text-gray-500">We'll respond within 24 hours</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <MapPin className="w-5 h-5 text-purple-600 mt-1" />
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Visit Our Office</h3>
+                    <p className="text-gray-600">AGGARWAL PLAZA, Netaji Subhash Place, Pitampura, New. Delhi 110034</p>
+                    <p className="text-sm text-gray-500">Mon-Sat: 9:00 AM - 6:00 PM</p>
                   </div>
                 </div>
 
@@ -110,7 +120,9 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold text-gray-900">WhatsApp Support</h3>
                     <a 
-                      href="https://wa.me/919876543210 " 
+                      href="https://wa.me/919173803878
+
+ " 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="inline-flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"

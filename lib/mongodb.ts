@@ -1,17 +1,26 @@
 import { MongoClient } from 'mongodb'
 
 // Default MongoDB URI for development
-const DEFAULT_MONGODB_URI = 'mongodb://kakkadpriyansh:Priyansh@0.0.0.0:27017/?authSource=admin'
+// Note: 0.0.0.0 is a bind address, not a valid client host.
+// Use localhost as a safe default and prefer MONGODB_URI in env.
+const DEFAULT_MONGODB_URI = 'mongodb://localhost:27017/stylehub'
 
 const uri = process.env.MONGODB_URI || DEFAULT_MONGODB_URI
 const options = {
-  // Connection options for remote MongoDB
+  // Disable TLS for local development; production should rely on MONGODB_URI
   ssl: false,
   tls: false,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-  connectTimeoutMS: 10000,
-  maxPoolSize: 10
+  // Reduce server selection/connection timeouts to avoid long startup delays
+  serverSelectionTimeoutMS: 1500,
+  connectTimeoutMS: 3000,
+  socketTimeoutMS: 30000,
+  // Keep pool sizes moderate to avoid resource contention
+  maxPoolSize: 20,
+  minPoolSize: 0,
+  maxIdleTimeMS: 30000,
+  retryWrites: true,
+  retryReads: true
+  // Leave compressors to driver defaults; compression can add CPU overhead for small documents
 }
 
 let client: MongoClient

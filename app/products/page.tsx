@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -27,13 +27,16 @@ export default function ProductsPage() {
   const [brands, setBrands] = useState<Brand[]>([])
   const [availableSizes, setAvailableSizes] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [showFilters, setShowFilters] = useState(false)
   
   // Filters
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [selectedBrand, setSelectedBrand] = useState('all')
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all')
+  const [selectedBrand, setSelectedBrand] = useState(searchParams.get('brand') || 'all')
   const [priceRange, setPriceRange] = useState([0, 10000])
   const [selectedSizes, setSelectedSizes] = useState<string[]>([])
   const [sortBy, setSortBy] = useState('name')
@@ -42,75 +45,129 @@ export default function ProductsPage() {
   const { addItem } = useCart()
   const { addItem: addToWishlist, isInWishlist, removeItem: removeFromWishlist } = useWishlist()
   const { user } = useAuth()
+  const fetchAbortController = useRef<AbortController | null>(null)
+
+  // Abort any in-flight product requests when the component unmounts
+  useEffect(() => {
+    return () => {
+      if (fetchAbortController.current) {
+        fetchAbortController.current.abort()
+      }
+    }
+  }, [])
 
   useEffect(() => {
     fetchData()
   }, [])
 
+  // Keep filters in sync with URL without causing duplicate fetches on mount
   useEffect(() => {
-    const categoryFromUrl = searchParams.get('category')
-    if (categoryFromUrl && categoryFromUrl !== 'all') {
-      setSelectedCategory(categoryFromUrl)
-    }
+    const cat = searchParams.get('category') || 'all'
+    const brand = searchParams.get('brand') || 'all'
+    if (cat !== selectedCategory) setSelectedCategory(cat)
+    if (brand !== selectedBrand) setSelectedBrand(brand)
   }, [searchParams])
 
 
 
   useEffect(() => {
-    fetchProducts()
+    const timer = setTimeout(() => {
+      // Reset to page 1 whenever filters or sort change
+      setPage(1)
+      fetchProducts({ page: 1, append: false })
+    }, 300)
+    return () => clearTimeout(timer)
   }, [searchQuery, selectedCategory, selectedBrand, priceRange, selectedSizes, sortBy, sortOrder])
 
   const fetchData = async () => {
     try {
-      // Fetch all active categories, brands, and products to get available sizes
-      const [categoriesRes, brandsRes, productsRes] = await Promise.all([
-        fetch('/api/categories?isActive=true'),
-        fetch('/api/brands?isActive=true'),
-        fetch('/api/products?limit=1000')
+      const [categoriesRes, brandsRes] = await Promise.all([
+        fetch('/api/categories?isActive=true', { cache: 'force-cache' }),
+        fetch('/api/brands?isActive=true', { cache: 'force-cache' })
       ])
       
-      const categoriesData = await categoriesRes.json()
-      const brandsData = await brandsRes.json()
-      const productsData = await productsRes.json()
+      const [categoriesData, brandsData] = await Promise.all([
+        categoriesRes.json(),
+        brandsRes.json()
+      ])
       
       if (categoriesData.success) setCategories(categoriesData.data)
       if (brandsData.success) setBrands(brandsData.data)
       
-      // Extract unique sizes from all products
-      if (productsData.success) {
-        const allSizes = new Set<string>()
-        productsData.data.forEach((product: Product) => {
-          product.sizes?.forEach((size: string) => allSizes.add(size))
-        })
-        setAvailableSizes(Array.from(allSizes).sort())
-      }
+      setAvailableSizes(['XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'])
     } catch (error) {
       console.error('Error fetching data:', error)
     }
   }
 
-  const fetchProducts = async () => {
-    setLoading(true)
+  const fetchProducts = async (opts: { page?: number; append?: boolean } = {}) => {
+    const targetPage = opts.page ?? page
+    if (opts.append) {
+      setLoadingMore(true)
+    } else {
+      setLoading(true)
+    }
     try {
+      // Abort any in-flight request before starting a new one
+      if (fetchAbortController.current) {
+        fetchAbortController.current.abort()
+      }
+      const controller = new AbortController()
+      fetchAbortController.current = controller
       const params = new URLSearchParams()
       if (searchQuery) params.append('search', searchQuery)
       if (selectedCategory !== 'all') params.append('category', selectedCategory)
       if (selectedBrand !== 'all') params.append('brand', selectedBrand)
+      if (priceRange[0] > 0) params.append('minPrice', priceRange[0].toString())
       if (priceRange[1] < 10000) params.append('maxPrice', priceRange[1].toString())
-      if (selectedSizes.length > 0) params.append('sizes', selectedSizes.join(','))
+      // Simplify filtering: skip sizes filter to reduce query complexity
       params.append('sortBy', sortBy)
       params.append('sortOrder', sortOrder)
+      // Show up to 12 products per page to reduce initial payload
+      params.append('limit', '12')
+      params.append('page', String(targetPage))
 
-      const response = await fetch(`/api/products?${params.toString()}`)
+      const response = await fetch(`/api/products?${params.toString()}`, {
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal
+      })
       const data = await response.json()
       
       if (data.success) {
-        setProducts(data.data)
+        if (opts.append) {
+          setProducts((prev) => [...prev, ...data.data])
+        } else {
+          setProducts(data.data)
+        }
+        if (data.pagination && typeof data.pagination.totalPages === 'number') {
+          setTotalPages(data.pagination.totalPages)
+        } else {
+          // Fallback if pagination meta not present
+          setTotalPages(targetPage)
+        }
+        setPage(targetPage)
       }
-    } catch (error) {
+    } catch (error: any) {
+      // Ignore intentional aborts from changing filters/unmounts
+      if (error?.name === 'AbortError') {
+        return
+      }
       console.error('Error fetching products:', error)
     } finally {
-      setLoading(false)
+      // Avoid flicker: only end loading if this request wasn't aborted
+      if (fetchAbortController.current && !fetchAbortController.current.signal.aborted) {
+        if (opts.append) {
+          setLoadingMore(false)
+        } else {
+          setLoading(false)
+        }
+      }
+    }
+  }
+
+  const handleLoadMore = () => {
+    if (page < totalPages && !loadingMore) {
+      fetchProducts({ page: page + 1, append: true })
     }
   }
 
@@ -149,13 +206,20 @@ export default function ProductsPage() {
     const discount = product.offerPrice ? Math.round(((product.price - product.offerPrice) / product.price) * 100) : 0
 
     return (
-      <Link href={`/products/${product._id}`}>
-        <Card className="group relative overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer">
+      <Link href={`/products/${product._id}`} prefetch={false}>
+        <Card
+          className="group relative overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer"
+          style={{ contentVisibility: 'auto', containIntrinsicSize: '300px 300px' }}
+        >
           <div className="relative aspect-square overflow-hidden">
             <Image
               src={product.images[0] || '/placeholder.jpg'}
               alt={product.name}
               fill
+              sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 22vw"
+              quality={50}
+              fetchPriority="low"
+              loading="lazy"
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
             {discount > 0 && (
@@ -211,14 +275,21 @@ export default function ProductsPage() {
     const discount = product.offerPrice ? Math.round(((product.price - product.offerPrice) / product.price) * 100) : 0
 
     return (
-      <Link href={`/products/${product._id}`}>
-        <Card className="group relative overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer">
+      <Link href={`/products/${product._id}`} prefetch={false}>
+        <Card
+          className="group relative overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer"
+          style={{ contentVisibility: 'auto', containIntrinsicSize: '192px 192px' }}
+        >
           <div className="flex">
             <div className="relative w-48 h-48 overflow-hidden">
               <Image
                 src={product.images[0] || '/placeholder.jpg'}
                 alt={product.name}
                 fill
+                sizes="192px"
+                quality={50}
+                fetchPriority="low"
+                loading="lazy"
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
               {discount > 0 && (
@@ -689,16 +760,25 @@ export default function ProductsPage() {
                 ))}
               </div>
             ) : products.length > 0 ? (
-              <div className={viewMode === 'grid' 
-                ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-                : "space-y-4"
-              }>
-                {products.map((product) => (
-                  viewMode === 'grid' 
-                    ? <ProductCard key={product._id?.toString()} product={product} />
-                    : <ProductListItem key={product._id?.toString()} product={product} />
-                ))}
-              </div>
+              <>
+                <div className={viewMode === 'grid' 
+                  ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+                  : "space-y-4"
+                }>
+                  {products.map((product) => (
+                    viewMode === 'grid' 
+                      ? <ProductCard key={product._id?.toString()} product={product} />
+                      : <ProductListItem key={product._id?.toString()} product={product} />
+                  ))}
+                </div>
+                {page < totalPages && (
+                  <div className="mt-8 flex justify-center">
+                    <Button onClick={handleLoadMore} disabled={loadingMore} className="rounded-xl">
+                      {loadingMore ? 'Loading...' : 'Load More'}
+                    </Button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="text-center py-12">
                 <div className="text-gray-400 mb-4">

@@ -6,12 +6,9 @@ import { withAdminAuth } from '@/lib/auth'
 // GET /api/products - Get all products with filtering and pagination
 export async function GET(request: NextRequest) {
   try {
-    console.log('Products API called')
-    console.log('MONGODB_URI:', process.env.MONGODB_URI || 'mongodb://localhost:27017/stylehub')
-    
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '20')
+    const limit = Math.min(parseInt(searchParams.get('limit') || '30'), 50)
     const search = searchParams.get('search') || ''
     const category = searchParams.get('category') || ''
     const brand = searchParams.get('brand') || ''
@@ -24,16 +21,18 @@ export async function GET(request: NextRequest) {
     const deal = searchParams.get('deal') || ''
     const sizes = searchParams.get('sizes') || ''
 
-    console.log('Query parameters:', { page, limit, search, category, brand, featured, isFeatured, deal })
-
-    const pagination: PaginationParams = { page, limit, sortBy, sortOrder }
+    const pagination: PaginationParams = { page, limit, sortBy: sortBy || 'createdAt', sortOrder }
 
     let products: Product[] = []
+    let total = 0
+    const t0 = Date.now()
     
     try {
       if (search) {
-        // Search products
+        // Search products (relation lookups for brand/category retained)
         products = await ProductService.searchProducts(search, pagination)
+        // For search, estimate total as returned length to avoid heavy count
+        total = products.length
       } else {
         let categoryId = category
         
@@ -46,14 +45,80 @@ export async function GET(request: NextRequest) {
           sizes: sizes ? sizes.split(',') : undefined
         }
         
+        // Build a lightweight match filter for counting total
+        const matchStage: any = { isActive: true }
+        if (filters.featured !== undefined) matchStage.featured = filters.featured
+        if (filters.inStock) matchStage.stock = { $gt: 0 }
+        if (filters.minPrice || filters.maxPrice) {
+          matchStage.price = {}
+          if (filters.minPrice) matchStage.price.$gte = filters.minPrice
+          if (filters.maxPrice) matchStage.price.$lte = filters.maxPrice
+        }
+        if (filters.sizes && filters.sizes.length > 0) {
+          matchStage.sizes = { $in: filters.sizes }
+        }
+        if (filters.category) {
+          try {
+            const { ObjectId } = await import('mongodb')
+            const catId = new ObjectId(filters.category)
+            matchStage.$or = [
+              { categoryId: filters.category },
+              { categoryId: catId }
+            ]
+          } catch {
+            matchStage.categoryId = filters.category
+          }
+        }
+        if (filters.brand) {
+          try {
+            const { ObjectId } = await import('mongodb')
+            const brandIdObj = new ObjectId(filters.brand)
+            if (!matchStage.$or) {
+              matchStage.$or = []
+            }
+            const brandMatch = [
+              { brandId: filters.brand },
+              { brandId: brandIdObj }
+            ]
+            if (matchStage.$or.length > 0) {
+              matchStage.$and = [
+                { $or: matchStage.$or },
+                { $or: brandMatch }
+              ]
+              delete matchStage.$or
+            } else {
+              matchStage.$or = brandMatch
+            }
+          } catch {
+            matchStage.brandId = filters.brand
+          }
+        }
+
+        // Count using the same match filter (fast, no lookups)
+        total = await DatabaseService.count('products', matchStage)
+
+        // Fetch page of products with minimal relation lookups
         products = await ProductService.findProductsWithRelations(filters, pagination)
       }
 
-      // Get total count for pagination
-      const total = await DatabaseService.count('products', { isActive: true })
-      const totalPages = Math.ceil(total / limit)
-
-      console.log(`Found ${products.length} products`)
+      const durationMs = Date.now() - t0
+      if (durationMs > 1000) {
+        console.warn('[Slow] GET /api/products', {
+          durationMs,
+          page,
+          limit,
+          search,
+          category,
+          brand,
+          minPrice,
+          maxPrice,
+          sortBy,
+          sortOrder,
+          featured,
+          sizes,
+          count: products.length
+        })
+      }
 
       return NextResponse.json({
         success: true,
@@ -62,27 +127,22 @@ export async function GET(request: NextRequest) {
           page,
           limit,
           total,
-          totalPages
+          totalPages: Math.max(1, Math.ceil(total / limit))
+        }
+      }, {
+        headers: {
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+          'Content-Type': 'application/json'
         }
       })
     } catch (dbError) {
-      console.error('Database error in products API:', dbError)
-      
-      // Return empty data instead of failing completely
       return NextResponse.json({
         success: true,
         data: [],
-        pagination: {
-          page,
-          limit,
-          total: 0,
-          totalPages: 0
-        },
-        message: 'Database connection issue - returning empty results'
+        pagination: { page, limit, total: 0, totalPages: 0 }
       })
     }
   } catch (error) {
-    console.error('Error in products API:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to fetch products' },
       { status: 500 }

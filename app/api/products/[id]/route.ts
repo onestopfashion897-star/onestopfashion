@@ -21,6 +21,10 @@ export async function GET(
     return NextResponse.json({
       success: true,
       data: product,
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=240'
+      }
     })
   } catch (error) {
     console.error('Error fetching product:', error)

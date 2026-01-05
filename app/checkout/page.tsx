@@ -23,6 +23,7 @@ import {
 import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
 import { Navbar } from '@/components/ui/navbar'
+import { RazorpayScript } from '@/components/razorpay-script'
 import { useToast } from '@/hooks/use-toast'
 
 import Image from 'next/image'
@@ -199,6 +200,7 @@ export default function CheckoutPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
         <Navbar />
+        <RazorpayScript />
         <div className="container mx-auto px-4 py-16 pt-20">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
@@ -445,6 +447,7 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       <Navbar />
+      <RazorpayScript />
       <div className="container mx-auto px-4 py-8 pt-20">
         {/* Header */}
         <div className="mb-8">

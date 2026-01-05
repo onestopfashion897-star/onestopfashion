@@ -20,6 +20,14 @@ export async function GET(request: NextRequest) {
       // Get reviews for a specific product
       const approvedOnly = status !== 'all'
       reviews = await ReviewService.getProductReviews(productId, approvedOnly)
+      return NextResponse.json({
+        success: true,
+        data: reviews
+      }, {
+        headers: {
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120'
+        }
+      })
     } else if (userId) {
       // Get reviews by a specific user
       reviews = await ReviewService.getUserReviews(userId)

@@ -1,88 +1,95 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { AuthService } from '@/lib/auth'
-import { UserService, AdminService } from '@/lib/models'
+import { HorizontalBannerService } from '@/lib/models'
+import { withAdminAuth } from '@/lib/auth'
 
+// GET /api/horizontal-banners - Get all horizontal banners
 export async function GET(request: NextRequest) {
   try {
-    console.log('Admin auth/me API called')
-    
-    // Get token from cookies or Authorization header
-    const cookieToken = request.cookies.get('adminToken')?.value
-    const authHeader = request.headers.get('authorization')
-    const headerToken = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null
-    const token = cookieToken || headerToken
-    
-    if (!token) {
-      console.log('No admin token provided')
-      return NextResponse.json(
-        { success: false, error: 'No token provided' },
-        { status: 401 }
-      )
-    }
+    const { searchParams } = new URL(request.url)
+    const activeOnly = searchParams.get('active') === 'true'
 
-    console.log('Admin token found, validating...')
-    const decoded = AuthService.validateToken(token)
-    if (!decoded) {
-      console.log('Invalid admin token')
-      return NextResponse.json(
-        { success: false, error: 'Invalid token' },
-        { status: 401 }
-      )
-    }
-
-    // Check if user has admin role
-    if (!AuthService.hasAdminRole(decoded.role)) {
-      console.log('User does not have admin role:', decoded.role)
-      return NextResponse.json(
-        { success: false, error: 'Admin access required' },
-        { status: 403 }
-      )
-    }
-
-    console.log('Admin token validated, fetching admin...')
-
-    // Try to find admin first
-    let admin = await AdminService.findByEmail(decoded.email)
-    
-    // If not found as admin, try as user with admin role
-    if (!admin) {
-      console.log('Admin not found in admin collection, trying user collection...')
-      const user = await UserService.findById(decoded.userId)
-      if (user && AuthService.hasAdminRole(user.role)) {
-        // Convert user to admin format for consistent response
-        admin = {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role === 'super_admin' ? 'super_admin' : 'admin',
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
-        }
-      }
-    }
-    
-    if (!admin) {
-      console.log('Admin not found in database')
-      return NextResponse.json(
-        { success: false, error: 'Admin not found' },
-        { status: 404 }
-      )
-    }
-
-    console.log('Admin found successfully')
-
-    // Remove password from response if it exists
-    const { password: _, ...adminWithoutPassword } = admin
+    const banners = await HorizontalBannerService.getAllBanners(activeOnly)
 
     return NextResponse.json({
       success: true,
-      admin: adminWithoutPassword,
+      data: banners || [],
     })
   } catch (error) {
-    console.error('Error in admin auth/me API:', error)
+    console.error('Error fetching horizontal banners:', error)
+    return NextResponse.json({
+      success: true,
+      data: [],
+    })
+  }
+}
+
+// POST /api/horizontal-banners - Create new horizontal banner (Admin only)
+export const POST = withAdminAuth(async (request: NextRequest) => {
+  try {
+    const body = await request.json()
+    const { imageUrl, linkUrl, index, isActive } = body
+
+    if (!imageUrl) {
+      return NextResponse.json(
+        { success: false, error: 'Image URL is required' },
+        { status: 400 }
+      )
+    }
+
+    const bannerData = {
+      imageUrl: imageUrl.trim(),
+      linkUrl: linkUrl?.trim() || '',
+      index: index || 1,
+      isActive: isActive !== undefined ? isActive : true,
+    }
+
+    const banner = await HorizontalBannerService.createBanner(bannerData)
+
+    return NextResponse.json({
+      success: true,
+      data: banner,
+      message: 'Horizontal banner created successfully',
+    })
+  } catch (error) {
+    console.error('Error creating horizontal banner:', error)
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch admin' },
+      { success: false, error: 'Failed to create horizontal banner' },
       { status: 500 }
     )
   }
-}
+})
+
+// PUT /api/horizontal-banners - Reorder banners (Admin only)
+export const PUT = withAdminAuth(async (request: NextRequest) => {
+  try {
+    const body = await request.json()
+    const { bannerIds } = body
+
+    if (!Array.isArray(bannerIds)) {
+      return NextResponse.json(
+        { success: false, error: 'Banner IDs array is required' },
+        { status: 400 }
+      )
+    }
+
+    const success = await HorizontalBannerService.reorderBanners(bannerIds)
+
+    if (!success) {
+      return NextResponse.json(
+        { success: false, error: 'Failed to reorder banners' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Banners reordered successfully',
+    })
+  } catch (error) {
+    console.error('Error reordering horizontal banners:', error)
+    return NextResponse.json(
+      { success: false, error: 'Failed to reorder horizontal banners' },
+      { status: 500 }
+    )
+  }
+})

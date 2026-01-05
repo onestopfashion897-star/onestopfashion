@@ -170,19 +170,20 @@ export class ProductService {
     
     const pipeline = [
       { $match: { _id } },
+      { $limit: 1 },
       {
         $lookup: {
           from: COLLECTIONS.CATEGORIES,
-          localField: 'categoryId',
-          foreignField: '_id',
+          let: { catId: { $cond: { if: { $eq: [{ $type: '$categoryId' }, 'objectId'] }, then: '$categoryId', else: { $toObjectId: '$categoryId' } } } },
+          pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$catId'] } } }, { $project: { name: 1, slug: 1 } }, { $limit: 1 }],
           as: 'category'
         }
       },
       {
         $lookup: {
           from: COLLECTIONS.BRANDS,
-          localField: 'brandId',
-          foreignField: '_id',
+          let: { brandId: { $cond: { if: { $eq: [{ $type: '$brandId' }, 'objectId'] }, then: '$brandId', else: { $toObjectId: '$brandId' } } } },
+          pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$brandId'] } } }, { $project: { name: 1, slug: 1 } }, { $limit: 1 }],
           as: 'brand'
         }
       },
@@ -237,39 +238,107 @@ export class ProductService {
       matchStage.sizes = { $in: filters.sizes }
     }
 
-    const pipeline: any[] = [
-      { $match: matchStage },
-      {
-        $addFields: {
-          categoryIdObj: {
-            $cond: {
-              if: { $eq: [{ $type: '$categoryId' }, 'string'] },
-              then: { $toObjectId: '$categoryId' },
-              else: '$categoryId'
-            }
-          },
-          brandIdObj: {
-            $cond: {
-              if: { $eq: [{ $type: '$brandId' }, 'string'] },
-              then: { $toObjectId: '$brandId' },
-              else: '$brandId'
-            }
-          }
+    if (filters.category) {
+      try {
+        const catId = new ObjectId(filters.category)
+        matchStage.$or = [
+          { categoryId: filters.category },
+          { categoryId: catId }
+        ]
+      } catch {
+        matchStage.categoryId = filters.category
+      }
+    }
+
+    if (filters.brand) {
+      try {
+        const brandId = new ObjectId(filters.brand)
+        if (!matchStage.$or) {
+          matchStage.$or = []
         }
-      },
+        const brandMatch = [
+          { brandId: filters.brand },
+          { brandId: brandId }
+        ]
+        if (matchStage.$or.length > 0) {
+          matchStage.$and = [
+            { $or: matchStage.$or },
+            { $or: brandMatch }
+          ]
+          delete matchStage.$or
+        } else {
+          matchStage.$or = brandMatch
+        }
+      } catch {
+        matchStage.brandId = filters.brand
+      }
+    }
+
+    const pipeline: any[] = []
+    
+    if (pagination) {
+      const { page, limit, sortBy, sortOrder } = pagination
+      const skip = (page - 1) * limit
+      
+      pipeline.push({ $match: matchStage })
+      
+      if (sortBy) {
+        const sortDirection = sortOrder === 'desc' ? -1 : 1
+        pipeline.push({ $sort: { [sortBy]: sortDirection } })
+      }
+      
+      pipeline.push({ $skip: skip }, { $limit: limit })
+      // Project only fields needed for listing to reduce payload
+      pipeline.push({
+        $project: {
+          name: 1,
+          price: 1,
+          offerPrice: 1,
+          stock: 1,
+          sizes: 1,
+          images: 1,
+          categoryId: 1,
+          brandId: 1,
+          createdAt: 1,
+          isActive: 1,
+          featured: 1,
+          sku: 1
+        }
+      })
+    } else {
+      pipeline.push({ $match: matchStage })
+      pipeline.push({
+        $project: {
+          name: 1,
+          price: 1,
+          offerPrice: 1,
+          stock: 1,
+          sizes: 1,
+          images: 1,
+          categoryId: 1,
+          brandId: 1,
+          createdAt: 1,
+          isActive: 1,
+          featured: 1,
+          sku: 1
+        }
+      })
+    }
+
+    pipeline.push(
       {
         $lookup: {
           from: COLLECTIONS.CATEGORIES,
-          localField: 'categoryIdObj',
-          foreignField: '_id',
+          let: { catId: { $cond: { if: { $eq: [{ $type: '$categoryId' }, 'objectId'] }, then: '$categoryId', else: { $toObjectId: '$categoryId' } } } },
+          pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$catId'] } } }, { $limit: 1 }],
           as: 'category'
         }
       },
       {
         $lookup: {
           from: COLLECTIONS.BRANDS,
-          localField: 'brandIdObj',
-          foreignField: '_id',
+          let: { brandId: { $cond: { if: { $eq: [{ $type: '$brandId' }, 'objectId'] }, then: '$brandId', else: { $toObjectId: '$brandId' } } } },
+          pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$brandId'] } } }, { $limit: 1 }],
           as: 'brand'
         }
       },
@@ -279,69 +348,72 @@ export class ProductService {
           brand: { $arrayElemAt: ['$brand', 0] }
         }
       }
-    ]
-
-    // Add category filter after lookup - match either way
-    if (filters.category) {
-      pipeline.push({
-        $match: {
-          $or: [
-            { 'category._id': new ObjectId(filters.category) },
-            { categoryId: filters.category },
-            { categoryId: new ObjectId(filters.category) }
-          ]
+      ,
+      // Only expose necessary brand/category fields
+      {
+        $project: {
+          name: 1,
+          price: 1,
+          offerPrice: 1,
+          stock: 1,
+          sizes: 1,
+          images: 1,
+          categoryId: 1,
+          brandId: 1,
+          createdAt: 1,
+          isActive: 1,
+          featured: 1,
+          sku: 1,
+          'category._id': 1,
+          'category.name': 1,
+          'category.slug': 1,
+          'brand._id': 1,
+          'brand.name': 1,
+          'brand.slug': 1
         }
-      })
-    }
-
-    // Add brand filter after lookup - match either way
-    if (filters.brand) {
-      pipeline.push({
-        $match: {
-          $or: [
-            { 'brand._id': new ObjectId(filters.brand) },
-            { brandId: filters.brand },
-            { brandId: new ObjectId(filters.brand) }
-          ]
-        }
-      })
-    }
-
-    pipeline.push({
-      $project: {
-        categoryIdObj: 0,
-        brandIdObj: 0
       }
-    })
-
-    if (pagination) {
-      const { page, limit, sortBy, sortOrder } = pagination
-      const skip = (page - 1) * limit
-      
-      if (sortBy) {
-        const sortDirection = sortOrder === 'desc' ? -1 : 1
-        pipeline.push({ $sort: { [sortBy]: sortDirection } })
-      }
-      
-      pipeline.push({ $skip: skip }, { $limit: limit })
-    }
+    )
 
     return DatabaseService.aggregate<Product>(COLLECTIONS.PRODUCTS, pipeline)
   }
 
   static async searchProducts(query: string, pagination?: PaginationParams): Promise<Product[]> {
-    const pipeline: any[] = [
-      {
-        $match: {
-          isActive: true,
-          $or: [
-            { name: { $regex: query, $options: 'i' } },
-            { description: { $regex: query, $options: 'i' } },
-            { sku: { $regex: query, $options: 'i' } },
-            { tags: { $in: [new RegExp(query, 'i')] } }
-          ]
-        }
-      },
+    const pipeline: any[] = []
+
+    // Use text search if available for better performance
+    pipeline.push({
+      $match: {
+        isActive: true,
+        $text: { $search: query }
+      }
+    })
+    // Score and sort by text relevance by default
+    pipeline.push({ $addFields: { score: { $meta: 'textScore' } } })
+    pipeline.push({ $sort: { score: { $meta: 'textScore' }, createdAt: -1 } })
+
+    // Reduce payload early
+    pipeline.push({
+      $project: {
+        name: 1,
+        description: 1,
+        price: 1,
+        offerPrice: 1,
+        stock: 1,
+        sizes: 1,
+        images: 1,
+        categoryId: 1,
+        brandId: 1,
+        createdAt: 1,
+        isActive: 1,
+        featured: 1,
+        sku: 1,
+        tags: 1,
+        score: 1
+      }
+    })
+
+    // Keep lightweight lookups for display, avoid regex on joined names
+    pipeline.push(
       {
         $lookup: {
           from: 'brands',
@@ -365,25 +437,39 @@ export class ProductService {
         }
       },
       {
-        $match: {
-          $or: [
-            { name: { $regex: query, $options: 'i' } },
-            { description: { $regex: query, $options: 'i' } },
-            { sku: { $regex: query, $options: 'i' } },
-            { tags: { $in: [new RegExp(query, 'i')] } },
-            { 'brand.name': { $regex: query, $options: 'i' } },
-            { 'category.name': { $regex: query, $options: 'i' } }
-          ]
+        $project: {
+          name: 1,
+          description: 1,
+          price: 1,
+          offerPrice: 1,
+          stock: 1,
+          sizes: 1,
+          images: 1,
+          categoryId: 1,
+          brandId: 1,
+          createdAt: 1,
+          isActive: 1,
+          featured: 1,
+          sku: 1,
+          tags: 1,
+          score: 1,
+          'category._id': 1,
+          'category.name': 1,
+          'category.slug': 1,
+          'brand._id': 1,
+          'brand.name': 1,
+          'brand.slug': 1
         }
       }
-    ]
+    )
 
     // Add pagination
     if (pagination) {
       const skip = (pagination.page - 1) * pagination.limit
       pipeline.push({ $skip: skip })
       pipeline.push({ $limit: pagination.limit })
-      
+
+      // If explicit sort is requested, apply after relevance sort
       if (pagination.sortBy) {
         const sortOrder = pagination.sortOrder === 'desc' ? -1 : 1
         pipeline.push({ $sort: { [pagination.sortBy]: sortOrder } })
@@ -804,27 +890,35 @@ export class ReviewService {
   }
 
   static async getReviewStats(productId: string): Promise<{ averageRating: number; totalReviews: number; ratingDistribution: Record<number, number> }> {
-    const reviews = await this.getProductReviews(productId, true)
-    
-    if (reviews.length === 0) {
-      return {
-        averageRating: 0,
-        totalReviews: 0,
-        ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+    const pipeline = [
+      { $match: { productId: new ObjectId(productId), status: 'approved' } },
+      {
+        $facet: {
+          summary: [
+            { $group: { _id: null, averageRating: { $avg: '$rating' }, totalReviews: { $sum: 1 } } }
+          ],
+          distribution: [
+            { $group: { _id: '$rating', count: { $sum: 1 } } }
+          ]
+        }
+      }
+    ]
+
+    const result: any[] = await DatabaseService.aggregate(COLLECTIONS.REVIEWS, pipeline)
+    const summary = (result[0]?.summary?.[0]) || { averageRating: 0, totalReviews: 0 }
+    const distArray: Array<{ _id: number; count: number }> = result[0]?.distribution || []
+
+    const ratingDistribution: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+    for (const r of distArray) {
+      const key = Math.round(r._id) as 1 | 2 | 3 | 4 | 5
+      if (ratingDistribution[key] !== undefined) {
+        ratingDistribution[key] = r.count
       }
     }
 
-    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0)
-    const averageRating = totalRating / reviews.length
-    
-    const ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
-    reviews.forEach(review => {
-      ratingDistribution[review.rating as keyof typeof ratingDistribution]++
-    })
-
     return {
-      averageRating: Math.round(averageRating * 10) / 10,
-      totalReviews: reviews.length,
+      averageRating: Math.round((summary.averageRating || 0) * 10) / 10,
+      totalReviews: summary.totalReviews || 0,
       ratingDistribution
     }
   }

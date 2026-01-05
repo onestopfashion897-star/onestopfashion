@@ -71,7 +71,8 @@ export default function TermsPage() {
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Returns & Exchanges</h2>
-                <p className="text-gray-600">Returns accepted within 7 days of delivery for unused items with tags. Exchanges subject to availability. Contact support@onestopfashion.com for assistance.</p>
+                <p className="text-gray-600">Returns accepted within 7 days of delivery for unused items with tags. Exchanges subject to availability. Contact fentrainfrapvtltd@gmail.com
+ for assistance.</p>
               </div>
             </div>
           </div>
@@ -132,9 +133,13 @@ export default function TermsPage() {
               <div>
                 <h2 className="text-xl font-semibold mb-3">10. Contact</h2>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <a href="mailto:support@onestopfashion.com" className="text-white hover:text-gray-300">support@onestopfashion.com</a>
+                  <a href="mailto:fentrainfrapvtltd@gmail.com
+" className="text-white hover:text-gray-300">socodebusinesspvtltd@gmail.com
+</a>
                   <span className="hidden sm:inline text-gray-500">|</span>
-                  <a href="tel:+919876543210" className="text-white hover:text-gray-300">+91 98765 43210</a>
+                  <a href="tel:+919173803878
+
+" className="text-white hover:text-gray-300">+91 96625 62675</a>
                 </div>
               </div>
             </div>

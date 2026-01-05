@@ -27,7 +27,7 @@ export function Footer() {
           </div>
         </div>
         <div className="border-t border-white/10 pt-8 text-center text-sm text-gray-400">
-          <p>© {new Date().getFullYear()} One Stop Fashion. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} SOCODE BUSINESS SOLUTIONS PRIVATE LIMITED. All rights reserved.</p>
         </div>
       </div>
     </footer>

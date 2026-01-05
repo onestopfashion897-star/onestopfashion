@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -172,10 +173,14 @@ export function ModernHero() {
                       className="relative w-48 h-60 rounded-[2rem] overflow-hidden cursor-pointer shadow-2xl"
                       onClick={() => slide.linkUrl && (window.location.href = slide.linkUrl)}
                     >
-                      <img
+                      <Image
                         src={slide.imageUrl}
                         alt={`Banner ${slide.index}`}
-                        className="w-full h-full object-cover"
+                        fill
+                        sizes="(max-width: 768px) 60vw, 192px"
+                        priority={isCenter}
+                        loading={isCenter ? 'eager' : 'lazy'}
+                        className="object-cover"
                       />
                     </div>
                   </div>

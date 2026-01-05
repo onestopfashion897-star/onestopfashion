@@ -548,9 +548,9 @@ export default function ProductsPage() {
       offerPrice: product.offerPrice || 0,
       stock: product.stock,
       sku: product.sku,
-      sizes: product.sizes,
-      tags: product.tags,
-      images: product.images,
+      sizes: product.sizes || [],
+      tags: product.tags || [],
+      images: product.images || [],
       galleryImages: product.images, // Assuming gallery images are the same as main images for now
       sizeChart: (product as any).sizeChart || '', // Handle optional size chart
       hasVariants: product.hasVariants || false,
@@ -560,11 +560,12 @@ export default function ProductsPage() {
     })
     
     // Initialize size stocks from existing sizeStocks or distribute evenly
+    const productSizes = product.sizes || []
     const initialSizeStocks = product.sizeStocks && product.sizeStocks.length > 0
       ? product.sizeStocks
-      : product.sizes.map(size => ({
+      : productSizes.map(size => ({
           size,
-          stock: Math.floor(product.stock / product.sizes.length) // Distribute stock evenly as fallback
+          stock: productSizes.length > 0 ? Math.floor(product.stock / productSizes.length) : 0 // Distribute stock evenly as fallback
         }))
     setSizeStocks(initialSizeStocks)
     
@@ -644,10 +645,10 @@ export default function ProductsPage() {
     return brand ? brand.name : 'Unknown'
   }
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         product.sku.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredProducts = (products || []).filter(product => {
+    const matchesSearch = (product.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         (product.description || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         (product.sku || '').toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory = selectedCategory === 'all' || product.categoryId === selectedCategory
     const matchesBrand = selectedBrand === 'all' || product.brandId === selectedBrand
     return matchesSearch && matchesCategory && matchesBrand
@@ -1342,7 +1343,7 @@ export default function ProductsPage() {
                   filteredProducts.map((product) => (
                     <div key={product._id} className="border rounded-lg p-4 space-y-3">
                       <div className="flex items-start gap-3">
-                        {product.images.length > 0 ? (
+                        {(product.images || []).length > 0 ? (
                           <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                             <img
                               src={product.images[0]}
@@ -1452,7 +1453,7 @@ export default function ProductsPage() {
                   filteredProducts.map((product) => (
                     <TableRow key={product._id}>
                       <TableCell>
-                        {product.images.length > 0 ? (
+                        {(product.images || []).length > 0 ? (
                           <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100">
                             <img
                               src={product.images[0]}

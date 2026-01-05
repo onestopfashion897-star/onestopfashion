@@ -81,7 +81,8 @@ export default function PrivacyPage() {
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Your Rights</h2>
-                <p className="text-gray-600">You have the right to access, update, or delete your personal information. Contact us at support@onestopfashion.com to exercise these rights.</p>
+                <p className="text-gray-600">You have the right to access, update, or delete your personal information. Contact us at fentrainfrapvtltd@gmail.com
+ to exercise these rights.</p>
               </div>
             </div>
           </div>
@@ -118,9 +119,13 @@ export default function PrivacyPage() {
               <div>
                 <h2 className="text-xl font-semibold mb-3">9. Contact Us</h2>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <a href="mailto:support@onestopfashion.com" className="text-white hover:text-gray-300">support@onestopfashion.com</a>
+                  <a href="mailto:fentrainfrapvtltd@gmail.com
+" className="text-white hover:text-gray-300">socodebusinesspvtltd@gmail.com
+</a>
                   <span className="hidden sm:inline text-gray-500">|</span>
-                  <a href="tel:+919876543210" className="text-white hover:text-gray-300">+91 98765 43210</a>
+                  <a href="tel:+919173803878
+
+" className="text-white hover:text-gray-300">+91 96625 62675</a>
                 </div>
               </div>
             </div>

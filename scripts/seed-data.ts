@@ -376,14 +376,18 @@ async function seedData() {
     const user = await db.collection('users').insertOne({
       name: 'John Doe',
       email: 'john@example.com',
-      phone: '+919876543210 ',
+      phone: '+919173803878
+
+ ',
       password: userPassword,
       role: 'user',
       addresses: [
         {
           id: '1',
           name: 'John Doe',
-          phone: '+919876543210 ',
+          phone: '+919173803878
+
+ ',
           address: '123 Main Street',
           city: 'Mumbai',
           state: 'Maharashtra',

@@ -6,7 +6,8 @@ import { AdminAuthProvider } from "@/contexts/AdminAuthContext"
 import { CartProvider } from "@/contexts/CartContext"
 import { WishlistProvider } from "@/contexts/WishlistContext"
 import { Toaster } from "@/components/ui/toaster"
-import { RazorpayScript } from "@/components/razorpay-script"
+// Razorpay script will be loaded only on checkout page to avoid extra JS on other routes
+// import { RazorpayScript } from "@/components/razorpay-script"
 
 
 export const metadata: Metadata = {
@@ -29,10 +30,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className="overflow-x-hidden">
-      <head>
-        <link href="https://fonts.googleapis.com/css2?family=TeX+Gyre+Adventor&display=swap" rel="stylesheet" />
-      </head>
-      <body className="overflow-x-hidden" style={{ fontFamily: '"TeX Gyre Adventor", sans-serif' }}>
+      <head></head>
+      <body className="overflow-x-hidden font-sans">
           <ThemeProvider
             attribute="class"
             defaultTheme="light"
@@ -45,7 +44,6 @@ export default function RootLayout({
                   <WishlistProvider>
                     {children}
                     <Toaster />
-                    <RazorpayScript />
                   </WishlistProvider>
                 </CartProvider>
               </AdminAuthProvider>

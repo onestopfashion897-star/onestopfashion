@@ -13,9 +13,10 @@ import { useWishlist } from "@/contexts/WishlistContext"
 
 interface ProductCardProps {
   product: Product
+  showReviewStats?: boolean
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, showReviewStats = true }: ProductCardProps) {
   const { addItem } = useCart()
   const { addItem: addToWishlist, isInWishlist, removeItem: removeFromWishlist } = useWishlist()
   const { toast } = useToast()
@@ -27,6 +28,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const [reviewStats, setReviewStats] = useState<{ averageRating: number; totalReviews: number } | null>(null)
 
   useEffect(() => {
+    if (!showReviewStats) return
     const fetchReviewStats = async () => {
       try {
         const res = await fetch(`/api/reviews/stats?productId=${product._id}`)
@@ -44,7 +46,7 @@ export function ProductCard({ product }: ProductCardProps) {
       }
     }
     fetchReviewStats()
-  }, [product._id])
+  }, [product._id, showReviewStats])
 
   // Safely derive brand name as a string to avoid ReactNode type issues
   const brandName =

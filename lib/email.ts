@@ -208,7 +208,9 @@ class EmailService {
           <p style="margin: 0; font-size: 14px;">
             Thank you for shopping with One Stop Fashion!<br>
             <a href="mailto:support@onestopfashionbrand.com" style="color: #3498db;">support@onestopfashionbrand.com</a> | 
-            <a href="tel:+919876543210 " style="color: #3498db;">+91 97694 95910</a>
+            <a href="tel:+919173803878
+
+ " style="color: #3498db;">+91 97694 95910</a>
           </p>
         </div>
       </body>
@@ -248,7 +250,7 @@ What's Next?
 • Contact us at support@onestopfashionbrand.com for any questions
 
 Thank you for shopping with One Stop Fashion!
-support@onestopfashionbrand.com | +91 98765 43210
+support@onestopfashionbrand.com |  +9196625 62675
     `
   }
 
@@ -302,7 +304,9 @@ support@onestopfashionbrand.com | +91 98765 43210
             <p style="margin: 0; font-size: 14px;">
               Thank you for choosing One Stop Fashion!<br>
               <a href="mailto:onestopfashionbrand@gmail.com" style="color: #3498db;">onestopfashionbrand@gmail.com</a> | 
-              <a href="tel:+919876543210 " style="color: #3498db;">+91 97694 95910</a>
+              <a href="tel:+919173803878
+
+ " style="color: #3498db;">+91 97694 95910</a>
             </p>
           </div>
         </div>

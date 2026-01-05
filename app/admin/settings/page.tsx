@@ -43,7 +43,7 @@ export default function SettingsPage() {
     // General Settings
     storeName: "one stop fashion brand",
     storeEmail: "admin@onestopfashionbrand.com",
-    storePhone: "+91 9876543210 ",
+    storePhone: "+919173803878 ",
     storeAddress: "123 Fashion Street, Delhi, 110001",
     currency: "INR",
     timezone: "Asia/Kolkata",
